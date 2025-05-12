@@ -27,12 +27,6 @@
       "schema": "./src/generators/convert-to-inferred/schema.json",
       "description": "Convert existing Storybook project(s) using `@nx/storybook:*` executors to use `@nx/storybook/plugin`. Defaults to migrating all projects. Pass '--project' to migrate only one target."
     },
-    "migrate-7": {
-      "factory": "./src/generators/migrate-7/migrate-7",
-      "schema": "./src/generators/migrate-7/schema.json",
-      "description": "Migrate to Storybook version 7.",
-      "hidden": false
-    },
     "migrate-8": {
       "factory": "./src/generators/migrate-8/migrate-8",
       "schema": "./src/generators/migrate-8/schema.json",

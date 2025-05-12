@@ -24,7 +24,7 @@ jest.mock('nx/src/project-graph/project-graph', () => ({
     .mockImplementation(async () => ({ nodes: {}, dependencies: {} })),
 }));
 
-describe('@nx/storybook:configuration for Storybook v7', () => {
+describe('@nx/storybook:configuration for Storybook v9', () => {
   describe('dependencies', () => {
     let tree: Tree;
 
@@ -38,7 +38,7 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       });
 
       jest.resetModules();
-      jest.doMock('@storybook/core-server/package.json', () => ({
+      jest.doMock('storybook/package.json', () => ({
         version: storybookVersion,
       }));
     });
@@ -65,10 +65,10 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       expect(packageJson.devDependencies[existing]).toBeDefined();
       expect(
         packageJson.devDependencies['@storybook/addon-essentials']
-      ).toBeDefined();
+      ).not.toBeDefined();
       expect(
         packageJson.devDependencies['@storybook/core-server']
-      ).toBeDefined();
+      ).not.toBeDefined();
       // angular specific
       expect(packageJson.devDependencies['@storybook/angular']).toBeDefined();
       expect(packageJson.devDependencies['@angular/forms']).toBeDefined();
@@ -109,7 +109,7 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       expect(packageJson.devDependencies[existing]).toBeDefined();
       expect(
         packageJson.devDependencies['@storybook/addon-essentials']
-      ).toBeDefined();
+      ).not.toBeDefined();
       // react specific
       expect(
         packageJson.devDependencies['@storybook/react-webpack5']
@@ -150,7 +150,7 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       expect(packageJson.devDependencies[existing]).toBeDefined();
       expect(
         packageJson.devDependencies['@storybook/addon-essentials']
-      ).toBeDefined();
+      ).not.toBeDefined();
       // react specific
       expect(
         packageJson.devDependencies['@storybook/react-webpack5']
@@ -193,7 +193,7 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       expect(packageJson.devDependencies[existing]).toBeDefined();
       expect(
         packageJson.devDependencies['@storybook/addon-essentials']
-      ).toBeDefined();
+      ).not.toBeDefined();
       // react specific
       expect(
         packageJson.devDependencies['@storybook/react-webpack5']
@@ -244,7 +244,7 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       expect(packageJson.devDependencies[existing]).toBeDefined();
       expect(
         packageJson.devDependencies['@storybook/addon-essentials']
-      ).toBeDefined();
+      ).not.toBeDefined();
       // react specific
       expect(
         packageJson.devDependencies['@storybook/react-webpack5']
@@ -295,7 +295,7 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       expect(packageJson.devDependencies[existing]).toBeDefined();
       expect(
         packageJson.devDependencies['@storybook/addon-essentials']
-      ).toBeDefined();
+      ).not.toBeDefined();
       // react specific
       expect(
         packageJson.devDependencies['@storybook/react-webpack5']
@@ -350,7 +350,7 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       expect(packageJson.devDependencies[existing]).toBeDefined();
       expect(
         packageJson.devDependencies['@storybook/addon-essentials']
-      ).toBeDefined();
+      ).not.toBeDefined();
       // react specific
       expect(
         packageJson.devDependencies['@storybook/react-webpack5']
@@ -403,14 +403,13 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       });
       writeJson(tree, 'package.json', {
         devDependencies: {
-          '@storybook/addon-essentials': storybookVersion,
-          '@storybook/react': storybookVersion,
-          '@storybook/core-server': storybookVersion,
+          '@storybook/react-webpack5': storybookVersion,
+          storybook: storybookVersion,
         },
       });
 
       jest.resetModules();
-      jest.doMock('@storybook/core-server/package.json', () => ({
+      jest.doMock('storybook/package.json', () => ({
         version: storybookVersion,
       }));
     });
@@ -591,7 +590,7 @@ describe('@nx/storybook:configuration for Storybook v7', () => {
       });
 
       jest.resetModules();
-      jest.doMock('@storybook/core-server/package.json', () => ({
+      jest.doMock('storybook/package.json', () => ({
         version: storybookVersion,
       }));
     });

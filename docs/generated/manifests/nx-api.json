@@ -4923,15 +4923,6 @@
         "path": "/nx-api/storybook/generators/convert-to-inferred",
         "type": "generator"
       },
-      "/nx-api/storybook/generators/migrate-7": {
-        "description": "Migrate to Storybook version 7.",
-        "file": "generated/packages/storybook/generators/migrate-7.json",
-        "hidden": false,
-        "name": "migrate-7",
-        "originalFilePath": "/packages/storybook/src/generators/migrate-7/schema.json",
-        "path": "/nx-api/storybook/generators/migrate-7",
-        "type": "generator"
-      },
       "/nx-api/storybook/generators/migrate-8": {
         "description": "Migrate to Storybook version 8.",
         "file": "generated/packages/storybook/generators/migrate-8.json",
@@ -4962,6 +4953,16 @@
         "path": "/nx-api/storybook/migrations/update-21-1-0-migrate-storybook-v9",
         "type": "migration"
       },
+      "/nx-api/storybook/migrations/21.1.0-package-updates": {
+        "description": "",
+        "file": "generated/packages/storybook/migrations/21.1.0-package-updates.json",
+        "hidden": false,
+        "name": "21.1.0-package-updates",
+        "version": "21.1.0-beta.0",
+        "originalFilePath": "/packages/storybook",
+        "path": "/nx-api/storybook/migrations/21.1.0-package-updates",
+        "type": "migration"
+      },
       "/nx-api/storybook/migrations/20.8.0-package-updates": {
         "description": "",
         "file": "generated/packages/storybook/migrations/20.8.0-package-updates.json",
@@ -4980,16 +4981,6 @@
         "version": "20.2.0-beta.5",
         "originalFilePath": "/packages/storybook",
         "path": "/nx-api/storybook/migrations/20.2.0-package-updates",
-        "type": "migration"
-      },
-      "/nx-api/storybook/migrations/19.7.0-package-updates": {
-        "description": "",
-        "file": "generated/packages/storybook/migrations/19.7.0-package-updates.json",
-        "hidden": false,
-        "name": "19.7.0-package-updates",
-        "version": "19.7.0-beta.1",
-        "originalFilePath": "/packages/storybook",
-        "path": "/nx-api/storybook/migrations/19.7.0-package-updates",
         "type": "migration"
       },
       "/nx-api/storybook/migrations/19.6.0-package-updates": {

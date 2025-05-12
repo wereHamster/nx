@@ -26,8 +26,9 @@ export function ensureDependencies(
   options: EnsureDependenciesOptions
 ) {
   let storybook7VersionToInstall = storybookVersion;
+  const installedStorybookMajorVersion = storybookMajorVersion();
   if (
-    storybookMajorVersion() >= 7 &&
+    installedStorybookMajorVersion >= 7 &&
     getInstalledStorybookVersion() &&
     gte(getInstalledStorybookVersion(), '7.0.0')
   ) {
@@ -35,10 +36,13 @@ export function ensureDependencies(
   }
 
   const dependencies: Record<string, string> = {};
-  const devDependencies: Record<string, string> = {
-    '@storybook/core-server': storybook7VersionToInstall,
-    '@storybook/addon-essentials': storybook7VersionToInstall,
-  };
+  const devDependencies: Record<string, string> =
+    installedStorybookMajorVersion < 9
+      ? {
+          '@storybook/core-server': storybook7VersionToInstall,
+          '@storybook/addon-essentials': storybook7VersionToInstall,
+        }
+      : {};
 
   const packageJson = readJson(tree, 'package.json');
   packageJson.dependencies ??= {};

@@ -1,6 +1,6 @@
 {
-  "name": "19.7.0-package-updates",
-  "version": "19.7.0-beta.1",
+  "name": "21.1.0-package-updates",
+  "version": "21.1.0-beta.0",
   "packages": {
     "@storybook/angular": {
       "version": "^9.0.0",
@@ -9,14 +9,6 @@
     "@storybook/react": {
       "version": "^9.0.0",
       "alwaysAddToPackageJson": false
-    },
-    "@storybook/addon-essentials": {
-      "version": "^9.0.0",
-      "alwaysAddToPackageJson": false
-    },
-    "@storybook/addon-interactions": {
-      "version": "^9.0.0",
-      "alwaysAddToPackageJson": true
     },
     "storybook": { "version": "^9.0.0", "alwaysAddToPackageJson": true },
     "@storybook/addon-jest": {

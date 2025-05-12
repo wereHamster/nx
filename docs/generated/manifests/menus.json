@@ -10677,14 +10677,6 @@
                 "disableCollapsible": false
               },
               {
-                "id": "migrate-7",
-                "path": "/nx-api/storybook/generators/migrate-7",
-                "name": "migrate-7",
-                "children": [],
-                "isExternal": false,
-                "disableCollapsible": false
-              },
-              {
                 "id": "migrate-8",
                 "path": "/nx-api/storybook/generators/migrate-8",
                 "name": "migrate-8",

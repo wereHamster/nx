@@ -1,5 +1,5 @@
 import { ExecutorContext, logger } from '@nx/devkit';
-import { CLIOptions } from '@storybook/types';
+import type { CLIOptions } from 'storybook/internal/types';
 import {
   pleaseUpgrade,
   storybookConfigExistsCheck,
@@ -33,7 +33,11 @@ async function runInstance(options: CLIOptions): Promise<void | {
   address: string;
   networkAddress: string;
 }> {
-  const storybookCore = await import('@storybook/core-server');
+  const storybookCore = await (storybookMajorVersion() < 9
+    ? // This is needed for backwards compatibility - but we do not have the package installed in the nx repo
+      // @ts-ignore
+      import('@storybook/core-server')
+    : import('storybook/internal/core-server'));
   const env = process.env.NODE_ENV ?? 'production';
   process.env.NODE_ENV = env;
   return storybookCore.build({
