@@ -1,0 +1,36 @@
+{
+  "name": "migrate-9",
+  "factory": "./src/generators/migrate-9/migrate-9",
+  "schema": {
+    "cli": "nx",
+    "title": "Migrate Storybook to version 9.",
+    "description": "Migrate Storybook to version 9.",
+    "$id": "migrate-9",
+    "type": "object",
+    "properties": {
+      "autoAcceptAllPrompts": {
+        "type": "boolean",
+        "description": "Say yes to all the prompts from the Storybook CLI migration scripts.",
+        "default": false
+      },
+      "onlyShowListOfCommands": {
+        "type": "boolean",
+        "description": "Only show the steps that you need to follow in order to migrate. This does NOT make any changes to your code.",
+        "default": false
+      },
+      "noUpgrade": {
+        "type": "boolean",
+        "description": "Skip upgrading Storybook packages. Only use this option if you are already on version 9, and you do not want the latest beta.",
+        "default": false
+      }
+    },
+    "examplesFile": "",
+    "presets": []
+  },
+  "description": "Migrate to Storybook version 9.",
+  "hidden": false,
+  "implementation": "/packages/storybook/src/generators/migrate-9/migrate-9.ts",
+  "aliases": [],
+  "path": "/packages/storybook/src/generators/migrate-9/schema.json",
+  "type": "generator"
+}

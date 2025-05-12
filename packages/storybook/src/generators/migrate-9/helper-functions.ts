@@ -186,7 +186,9 @@ export function logResult(
     failedProjects: {};
   }
 ) {
-  const successfulProjects = Object.entries(migrationSummary.successfulProjects);
+  const successfulProjects = Object.entries(
+    migrationSummary.successfulProjects
+  );
   const failedProjects = Object.entries(migrationSummary.failedProjects);
 
   if (successfulProjects.length > 0) {

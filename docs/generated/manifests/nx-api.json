@@ -4940,9 +4940,28 @@
         "originalFilePath": "/packages/storybook/src/generators/migrate-8/schema.json",
         "path": "/nx-api/storybook/generators/migrate-8",
         "type": "generator"
+      },
+      "/nx-api/storybook/generators/migrate-9": {
+        "description": "Migrate to Storybook version 9.",
+        "file": "generated/packages/storybook/generators/migrate-9.json",
+        "hidden": false,
+        "name": "migrate-9",
+        "originalFilePath": "/packages/storybook/src/generators/migrate-9/schema.json",
+        "path": "/nx-api/storybook/generators/migrate-9",
+        "type": "generator"
       }
     },
     "migrations": {
+      "/nx-api/storybook/migrations/update-21-1-0-migrate-storybook-v9": {
+        "description": "Update workspace to use Storybook v9",
+        "file": "generated/packages/storybook/migrations/update-21-1-0-migrate-storybook-v9.json",
+        "hidden": false,
+        "name": "update-21-1-0-migrate-storybook-v9",
+        "version": "21.1.0-beta.0",
+        "originalFilePath": "/packages/storybook",
+        "path": "/nx-api/storybook/migrations/update-21-1-0-migrate-storybook-v9",
+        "type": "migration"
+      },
       "/nx-api/storybook/migrations/20.8.0-package-updates": {
         "description": "",
         "file": "generated/packages/storybook/migrations/20.8.0-package-updates.json",
@@ -4961,6 +4980,16 @@
         "version": "20.2.0-beta.5",
         "originalFilePath": "/packages/storybook",
         "path": "/nx-api/storybook/migrations/20.2.0-package-updates",
+        "type": "migration"
+      },
+      "/nx-api/storybook/migrations/19.7.0-package-updates": {
+        "description": "",
+        "file": "generated/packages/storybook/migrations/19.7.0-package-updates.json",
+        "hidden": false,
+        "name": "19.7.0-package-updates",
+        "version": "19.7.0-beta.1",
+        "originalFilePath": "/packages/storybook",
+        "path": "/nx-api/storybook/migrations/19.7.0-package-updates",
         "type": "migration"
       },
       "/nx-api/storybook/migrations/19.6.0-package-updates": {

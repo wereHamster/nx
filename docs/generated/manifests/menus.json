@@ -10691,6 +10691,14 @@
                 "children": [],
                 "isExternal": false,
                 "disableCollapsible": false
+              },
+              {
+                "id": "migrate-9",
+                "path": "/nx-api/storybook/generators/migrate-9",
+                "name": "migrate-9",
+                "children": [],
+                "isExternal": false,
+                "disableCollapsible": false
               }
             ],
             "isExternal": false,

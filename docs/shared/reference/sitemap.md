@@ -758,6 +758,7 @@
       - [convert-to-inferred](/nx-api/storybook/generators/convert-to-inferred)
       - [migrate-7](/nx-api/storybook/generators/migrate-7)
       - [migrate-8](/nx-api/storybook/generators/migrate-8)
+      - [migrate-9](/nx-api/storybook/generators/migrate-9)
     - [migrations](/nx-api/storybook/migrations)
   - [vite](/nx-api/vite)
     - [documents](/nx-api/vite/documents)
