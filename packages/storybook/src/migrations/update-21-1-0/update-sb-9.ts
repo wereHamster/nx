@@ -26,5 +26,8 @@ export default async function changeStorybookTargets(tree: Tree) {
       `https://nx.dev/nx-api/storybook/generators/migrate-9`,
     ],
   });
-  return migrate9Generator(tree, { autoAcceptAllPrompts: true });
+  return migrate9Generator(tree, {
+    autoAcceptAllPrompts: true,
+    versionTag: 'latest',
+  });
 }
