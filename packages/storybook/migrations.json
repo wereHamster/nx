@@ -784,6 +784,10 @@
           "version": "^9.0.0",
           "alwaysAddToPackageJson": false
         },
+        "@storybook/nextjs": {
+          "version": "^9.0.0",
+          "alwaysAddToPackageJson": false
+        },
         "@storybook/preact": {
           "version": "^9.0.0",
           "alwaysAddToPackageJson": false
@@ -813,6 +817,10 @@
           "alwaysAddToPackageJson": false
         },
         "@storybook/svelte-vite": {
+          "version": "^9.0.0",
+          "alwaysAddToPackageJson": false
+        },
+        "@storybook/sveltekit": {
           "version": "^9.0.0",
           "alwaysAddToPackageJson": false
         },

@@ -183,7 +183,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
 
       await configurationGenerator(tree, {
         project: 'test-ui-lib',
-        uiFramework: '@storybook/web-components-webpack5',
+        uiFramework: '@storybook/web-components-vite',
         addPlugin: true,
       });
 
@@ -211,7 +211,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
       ).not.toBeDefined();
       // generic web-components specific
       expect(
-        packageJson.devDependencies['@storybook/web-components-webpack5']
+        packageJson.devDependencies['@storybook/web-components-vite']
       ).toBeDefined();
       // generic vue specific
       expect(
@@ -234,7 +234,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
 
       await configurationGenerator(tree, {
         project: 'test-ui-lib',
-        uiFramework: '@storybook/vue-webpack5',
+        uiFramework: '@storybook/vue-vite',
         addPlugin: true,
       });
 
@@ -269,9 +269,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
         packageJson.devDependencies['@storybook/svelte-webpack5']
       ).not.toBeDefined();
       // generic vue specific
-      expect(
-        packageJson.devDependencies['@storybook/vue-webpack5']
-      ).toBeDefined();
+      expect(packageJson.devDependencies['@storybook/vue-vite']).toBeDefined();
     });
 
     it('should add vue3 related dependencies when using vue3 as uiFramework', async () => {
@@ -285,7 +283,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
 
       await configurationGenerator(tree, {
         project: 'test-ui-lib',
-        uiFramework: '@storybook/vue3-webpack5',
+        uiFramework: '@storybook/vue3-vite',
         addPlugin: true,
       });
 
@@ -324,9 +322,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
         packageJson.devDependencies['@storybook/svelte-webpack5']
       ).not.toBeDefined();
       // generic vue3 specific
-      expect(
-        packageJson.devDependencies['@storybook/vue3-webpack5']
-      ).toBeDefined();
+      expect(packageJson.devDependencies['@storybook/vue3-vite']).toBeDefined();
     });
 
     it('should add svelte related dependencies when using svelte as uiFramework', async () => {
@@ -340,7 +336,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
 
       await configurationGenerator(tree, {
         project: 'test-ui-lib',
-        uiFramework: '@storybook/svelte-webpack5',
+        uiFramework: '@storybook/svelte-vite',
         addPlugin: true,
       });
 
@@ -380,7 +376,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
       ).not.toBeDefined();
       // generic svelte specific
       expect(
-        packageJson.devDependencies['@storybook/svelte-webpack5']
+        packageJson.devDependencies['@storybook/svelte-vite']
       ).toBeDefined();
     });
   });
@@ -552,27 +548,7 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
       });
 
       expect(
-        readJson(tree, 'package.json').devDependencies['@storybook/test-runner']
-      ).toBeTruthy();
-
-      expect(
         readJson(tree, 'package.json').devDependencies['core-js']
-      ).toBeTruthy();
-
-      expect(
-        readJson(tree, 'package.json').devDependencies[
-          '@storybook/testing-library'
-        ]
-      ).toBeTruthy();
-
-      expect(
-        readJson(tree, 'package.json').devDependencies['@storybook/jest']
-      ).toBeTruthy();
-
-      expect(
-        readJson(tree, 'package.json').devDependencies[
-          '@storybook/addon-interactions'
-        ]
       ).toBeTruthy();
     });
   });
@@ -761,12 +737,6 @@ describe('@nx/storybook:configuration for Storybook v9', () => {
       await configurationGenerator(tree, {
         project: 'wv1',
         uiFramework: '@storybook/web-components-vite',
-        addPlugin: true,
-      });
-
-      await configurationGenerator(tree, {
-        project: 'ww1',
-        uiFramework: '@storybook/web-components-webpack5',
         addPlugin: true,
       });
     });

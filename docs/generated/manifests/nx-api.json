@@ -4825,16 +4825,16 @@
         "tags": [],
         "originalFilePath": "shared/packages/storybook/best-practices"
       },
-      "/nx-api/storybook/documents/storybook-7-setup": {
-        "id": "storybook-7-setup",
-        "name": "Storybook 7",
-        "description": "This guide explains how you can set up Storybook version 7 in your Nx workspace. It contains information about the generators and the frameworks that are supported.",
-        "file": "generated/packages/storybook/documents/storybook-7-setup",
+      "/nx-api/storybook/documents/storybook-9-setup": {
+        "id": "storybook-9-setup",
+        "name": "Storybook 9",
+        "description": "This guide explains how you can set up Storybook version 9 in your Nx workspace. It contains information about the generators and the frameworks that are supported.",
+        "file": "generated/packages/storybook/documents/storybook-9-setup",
         "itemList": [],
         "isExternal": false,
-        "path": "/nx-api/storybook/documents/storybook-7-setup",
+        "path": "/nx-api/storybook/documents/storybook-9-setup",
         "tags": [],
-        "originalFilePath": "shared/packages/storybook/storybook-7-setup"
+        "originalFilePath": "shared/packages/storybook/storybook-9-setup"
       }
     },
     "root": "/packages/storybook",

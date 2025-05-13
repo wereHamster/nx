@@ -10579,9 +10579,9 @@
                 "disableCollapsible": false
               },
               {
-                "name": "Storybook 7",
-                "path": "/nx-api/storybook/documents/storybook-7-setup",
-                "id": "storybook-7-setup",
+                "name": "Storybook 9",
+                "path": "/nx-api/storybook/documents/storybook-9-setup",
+                "id": "storybook-9-setup",
                 "isExternal": false,
                 "children": [],
                 "disableCollapsible": false

@@ -744,7 +744,7 @@
     - [documents](/nx-api/storybook/documents)
       - [Overview](/nx-api/storybook/documents/overview)
       - [Storybook best practices for making the most out of Nx](/nx-api/storybook/documents/best-practices)
-      - [Storybook 7](/nx-api/storybook/documents/storybook-7-setup)
+      - [Storybook 9](/nx-api/storybook/documents/storybook-9-setup)
     - [executors](/nx-api/storybook/executors)
       - [storybook](/nx-api/storybook/executors/storybook)
       - [build](/nx-api/storybook/executors/build)

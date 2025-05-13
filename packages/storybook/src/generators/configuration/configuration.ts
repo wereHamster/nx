@@ -44,7 +44,6 @@ import {
   tsLibVersion,
   tsNodeVersion,
 } from '../../utils/versions';
-import { interactionTestsDependencies } from './lib/interaction-testing.utils';
 import { ensureDependencies } from './lib/ensure-dependencies';
 import { editRootTsConfig } from './lib/edit-root-tsconfig';
 import { getProjectType } from '@nx/js/src/utils/typescript/ts-solution-setup';
@@ -202,13 +201,6 @@ export async function configurationGeneratorInternal(
 
   if (usesVite && !viteConfigFilePath) {
     devDeps['tslib'] = tsLibVersion;
-  }
-
-  if (schema.interactionTests) {
-    devDeps = {
-      ...devDeps,
-      ...interactionTestsDependencies(),
-    };
   }
 
   if (schema.configureStaticServe) {
