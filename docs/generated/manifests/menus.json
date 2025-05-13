@@ -10060,30 +10060,6 @@
                 "disableCollapsible": false
               },
               {
-                "id": "storybook-configuration",
-                "path": "/nx-api/react-native/generators/storybook-configuration",
-                "name": "storybook-configuration",
-                "children": [],
-                "isExternal": false,
-                "disableCollapsible": false
-              },
-              {
-                "id": "component-story",
-                "path": "/nx-api/react-native/generators/component-story",
-                "name": "component-story",
-                "children": [],
-                "isExternal": false,
-                "disableCollapsible": false
-              },
-              {
-                "id": "stories",
-                "path": "/nx-api/react-native/generators/stories",
-                "name": "stories",
-                "children": [],
-                "isExternal": false,
-                "disableCollapsible": false
-              },
-              {
                 "id": "upgrade-native",
                 "path": "/nx-api/react-native/generators/upgrade-native",
                 "name": "upgrade-native",

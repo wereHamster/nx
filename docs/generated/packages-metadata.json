@@ -4179,33 +4179,6 @@
         "type": "generator"
       },
       {
-        "description": "Set up Storybook for a React Native application or library.",
-        "file": "generated/packages/react-native/generators/storybook-configuration.json",
-        "hidden": false,
-        "name": "storybook-configuration",
-        "originalFilePath": "/packages/react-native/src/generators/storybook-configuration/schema.json",
-        "path": "react-native/generators/storybook-configuration",
-        "type": "generator"
-      },
-      {
-        "description": "Generate Storybook story for a React Native component.",
-        "file": "generated/packages/react-native/generators/component-story.json",
-        "hidden": false,
-        "name": "component-story",
-        "originalFilePath": "/packages/react-native/src/generators/component-story/schema.json",
-        "path": "react-native/generators/component-story",
-        "type": "generator"
-      },
-      {
-        "description": "Create stories for all components declared in an application or library.",
-        "file": "generated/packages/react-native/generators/stories.json",
-        "hidden": false,
-        "name": "stories",
-        "originalFilePath": "/packages/react-native/src/generators/stories/schema.json",
-        "path": "react-native/generators/stories",
-        "type": "generator"
-      },
-      {
         "description": "Destructive command to upgrade native iOS and Android code to latest.",
         "file": "generated/packages/react-native/generators/upgrade-native.json",
         "hidden": false,
