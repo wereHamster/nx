@@ -52,11 +52,12 @@ export function getAllStorybookInfo(tree: Tree): {
 } {
   const allStorybookDirs: { [key: string]: { configDir: string } } = {};
 
+  const extensions = ['ts', 'js', 'cjs', 'mts', 'mjs', 'cts'];
+  const isStorybookMainFile = (path: string) =>
+    extensions.some((ext) => path.endsWith(`.storybook/main.${ext}`));
+
   visitNotIgnoredFiles(tree, '', (storybookConfigPath) => {
-    if (
-      !storybookConfigPath.endsWith('.storybook/main.ts') &&
-      !storybookConfigPath.endsWith('.storybook/main.js')
-    ) {
+    if (isStorybookMainFile(storybookConfigPath)) {
       return;
     }
     const storybookConfigDir = dirname(storybookConfigPath);
@@ -192,7 +193,7 @@ export function logResult(
   output.log({
     title: `Migration complete!`,
     bodyLines: [
-      `🎉 Your Storybook configuration has been migrated to Storybook ^8.0.0!`,
+      `🎉 Your Storybook configuration has been migrated to Storybook ^9.0.0!`,
       `📖 You can see a summary of the tasks that were performed in the storybook-migration-summary.md file in the root of your workspace.`,
     ],
     color: 'green',
