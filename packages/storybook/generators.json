@@ -15,13 +15,6 @@
       "description": "Add Storybook configuration to a UI library or an application.",
       "hidden": false
     },
-    "cypress-project": {
-      "factory": "./src/generators/cypress-project/cypress-project",
-      "schema": "./src/generators/cypress-project/schema.json",
-      "description": "Add cypress E2E app to test a ui library that is set up for Storybook.",
-      "x-deprecated": "Deprecated: Use 'interactionTests' instead when running '@nx/storybook:configuration'. This generator will be removed in v21.",
-      "hidden": false
-    },
     "convert-to-inferred": {
       "factory": "./src/generators/convert-to-inferred/convert-to-inferred",
       "schema": "./src/generators/convert-to-inferred/schema.json",

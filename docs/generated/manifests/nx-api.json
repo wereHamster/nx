@@ -4905,15 +4905,6 @@
         "path": "/nx-api/storybook/generators/configuration",
         "type": "generator"
       },
-      "/nx-api/storybook/generators/cypress-project": {
-        "description": "Add cypress E2E app to test a ui library that is set up for Storybook.",
-        "file": "generated/packages/storybook/generators/cypress-project.json",
-        "hidden": false,
-        "name": "cypress-project",
-        "originalFilePath": "/packages/storybook/src/generators/cypress-project/schema.json",
-        "path": "/nx-api/storybook/generators/cypress-project",
-        "type": "generator"
-      },
       "/nx-api/storybook/generators/convert-to-inferred": {
         "description": "Convert existing Storybook project(s) using `@nx/storybook:*` executors to use `@nx/storybook/plugin`. Defaults to migrating all projects. Pass '--project' to migrate only one target.",
         "file": "generated/packages/storybook/generators/convert-to-inferred.json",

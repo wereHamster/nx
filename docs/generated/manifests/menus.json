@@ -10661,14 +10661,6 @@
                 "disableCollapsible": false
               },
               {
-                "id": "cypress-project",
-                "path": "/nx-api/storybook/generators/cypress-project",
-                "name": "cypress-project",
-                "children": [],
-                "isExternal": false,
-                "disableCollapsible": false
-              },
-              {
                 "id": "convert-to-inferred",
                 "path": "/nx-api/storybook/generators/convert-to-inferred",
                 "name": "convert-to-inferred",

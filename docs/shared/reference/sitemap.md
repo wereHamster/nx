@@ -754,7 +754,6 @@
     - [generators](/nx-api/storybook/generators)
       - [init](/nx-api/storybook/generators/init)
       - [configuration](/nx-api/storybook/generators/configuration)
-      - [cypress-project](/nx-api/storybook/generators/cypress-project)
       - [convert-to-inferred](/nx-api/storybook/generators/convert-to-inferred)
       - [migrate-8](/nx-api/storybook/generators/migrate-8)
       - [migrate-9](/nx-api/storybook/generators/migrate-9)
