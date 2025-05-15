@@ -44,24 +44,26 @@ suspend fun runTasksInParallel(
 
   logger.info("🏳️ Args: ${args.joinToString(", ")}")
 
-  if (buildTasks.isNotEmpty()) {
-    allResults.putAll(
-        runBuildLauncher(
-            connection,
-            buildTasks.associate { it.key to it.value },
-            args,
-            outputStream,
-            errorStream))
+  val buildJob = async {
+    if (buildTasks.isNotEmpty()) {
+      runBuildLauncher(
+          connection,
+          buildTasks.associate { it.key to it.value },
+          args,
+          outputStream1,
+          errorStream1)
+    } else emptyMap()
   }
 
-  if (testClassTasks.isNotEmpty()) {
-    allResults.putAll(
-        runTestLauncher(
-            connection,
-            testClassTasks.associate { it.key to it.value },
-            args,
-            outputStream,
-            errorStream))
+  val testJob = async {
+    if (testClassTasks.isNotEmpty()) {
+      runTestLauncher(
+          connection,
+          testClassTasks.associate { it.key to it.value },
+          args,
+          outputStream2,
+          errorStream2)
+    } else emptyMap()
   }
 
   val allResults = mutableMapOf<String, TaskResult>()
