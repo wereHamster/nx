@@ -8,6 +8,8 @@ import dev.nx.gradle.util.logger
 import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import org.gradle.tooling.BuildCancelledException
+import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.events.OperationType
 
@@ -130,7 +132,7 @@ fun runTestLauncher(
     outputStream: ByteArrayOutputStream,
     errorStream: ByteArrayOutputStream
 ): Map<String, TaskResult> {
-  val taskNames = tasks.values.map { it.taskName }.distinct().toTypedArray()
+  val taskNames = tasks.values.map { it.taskName }.distinct()
   logger.info("📋 Collected ${taskNames.size} unique task names: ${taskNames.joinToString(", ")}")
 
   val taskStartTimes = mutableMapOf<String, Long>()
@@ -147,29 +149,46 @@ fun runTestLauncher(
 
   val globalStart = System.currentTimeMillis()
   var globalOutput: String
+  val cancellationTokenSource = GradleConnector.newCancellationTokenSource()
 
   try {
     connection
         .newTestLauncher()
         .apply {
-          forTasks(*taskNames)
+          forTasks(*taskNames.toTypedArray())
           tasks.values
               .mapNotNull { it.testClassName }
               .forEach {
                 logger.info("Registering test class: $it")
-                withArguments("--tests", it)
                 withJvmTestClasses(it)
+                withArguments("--tests", it)
               }
+
+          withArguments("--no-rebuild")
+          withArguments("--isolate-projects") // Isolate project execution
+          withArguments("--no-configure-on-demand") // Prevent auto-configuration
+
           withArguments(*args.toTypedArray())
           setStandardOutput(outputStream)
           setStandardError(errorStream)
           addProgressListener(
               testListener(
-                  tasks, taskStartTimes, taskResults, testTaskStatus, testStartTimes, testEndTimes),
+                  tasks,
+                  taskStartTimes,
+                  taskResults,
+                  testTaskStatus,
+                  testStartTimes,
+                  testEndTimes,
+                  taskNames,
+                  cancellationTokenSource),
               OperationType.TEST)
+          withCancellationToken(cancellationTokenSource.token()) // Add cancellation token
         }
         .run()
     globalOutput = buildTerminalOutput(outputStream, errorStream)
+  } catch (e: BuildCancelledException) {
+    globalOutput = buildTerminalOutput(outputStream, errorStream)
+    logger.info("✅ Build cancelled gracefully by token.")
   } catch (e: Exception) {
     logger.warning(errorStream.toString())
     globalOutput =
