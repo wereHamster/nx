@@ -11,6 +11,7 @@ import {
   Tree,
   updateJson,
   updateNxJson,
+  writeJson,
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { createApp } from '../../utils/nx-devkit/testing';
@@ -313,7 +314,10 @@ describe('lib', () => {
           typeCheckHostBindings: true,
         },
         compilerOptions: {
-          forceConsistentCasingInFileNames: true,
+          experimentalDecorators: true,
+          importHelpers: true,
+          module: 'preserve',
+          skipLibCheck: true,
           noFallthroughCasesInSwitch: true,
           noPropertyAccessFromIndexSignature: true,
           noImplicitOverride: true,
@@ -332,15 +336,6 @@ describe('lib', () => {
           },
         ],
       });
-    });
-
-    it('should create tsconfig.base.json when it is missing', async () => {
-      tree.rename('tsconfig.base.json', 'tsconfig.json');
-
-      await runLibraryGeneratorWithOpts();
-
-      const appTsConfig = readJson(tree, 'my-lib/tsconfig.json');
-      expect(appTsConfig.extends).toBe('../tsconfig.base.json');
     });
 
     it('should check for existence of spec files before deleting them', async () => {
@@ -1179,7 +1174,6 @@ describe('lib', () => {
       const { generators } = readJson<NxJsonConfiguration>(tree, 'nx.json');
 
       // check that the TypeScript compiler options have been updated
-      expect(compilerOptions.forceConsistentCasingInFileNames).toBe(true);
       expect(compilerOptions.strict).toBe(true);
       expect(compilerOptions.noImplicitOverride).toBe(true);
       expect(compilerOptions.noPropertyAccessFromIndexSignature).toBe(true);
@@ -2024,6 +2018,159 @@ describe('lib', () => {
           imports: [CommonModule],
         })
         export class MyLibModule {}
+        "
+      `);
+    });
+  });
+
+  describe('TS solution setup', () => {
+    beforeEach(() => {
+      tree = createTreeWithEmptyWorkspace();
+      updateJson(tree, 'package.json', (json) => {
+        json.workspaces = ['packages/*'];
+        return json;
+      });
+      writeJson(tree, 'tsconfig.base.json', {
+        compilerOptions: {
+          composite: true,
+          declaration: true,
+          customConditions: ['development'],
+        },
+      });
+      writeJson(tree, 'tsconfig.json', {
+        extends: './tsconfig.base.json',
+        files: [],
+        references: [],
+      });
+    });
+
+    it('should foo', async () => {
+      await generateTestLibrary(tree, {
+        directory: 'lib1',
+        skipFormat: true,
+      });
+
+      expect(tree.exists('lib1/project.json')).toBe(false);
+      expect(tree.read('lib1/package.json', 'utf-8')).toMatchInlineSnapshot(`
+        "{
+          "name": "@proj/lib1",
+          "version": "0.0.1",
+          "private": true,
+          "type": "module",
+          "main": "./dist/index.js",
+          "module": "./src/index.ts",
+          "types": "./src/index.ts",
+          "exports": {
+            ".": {
+              "types": "./src/index.ts",
+              "import": "./src/index.ts",
+              "default": "./src/index.ts",
+              "development": "./src/index.ts"
+            },
+            "./package.json": "./package.json"
+          },
+          "sideEffects": false,
+          "nx": {
+            "prefix": "lib",
+            "targets": {
+              "test": {
+                "executor": "@nx/jest:jest",
+                "outputs": [
+                  "{projectRoot}/test-output/jest/coverage"
+                ],
+                "options": {
+                  "jestConfig": "lib1/jest.config.ts"
+                }
+              },
+              "lint": {
+                "executor": "@nx/eslint:lint"
+              }
+            }
+          },
+          "peerDependencies": {
+            "@angular/common": "^20.0.0",
+            "@angular/core": "^20.0.0"
+          }
+        }
+        "
+      `);
+      expect(tree.read('lib1/tsconfig.json', 'utf-8')).toMatchInlineSnapshot(`
+        "{
+          "extends": "../tsconfig.base.json",
+          "compilerOptions": {
+            "skipLibCheck": true,
+            "experimentalDecorators": true,
+            "importHelpers": true,
+            "target": "es2022",
+            "module": "preserve"
+          },
+          "angularCompilerOptions": {
+            "enableI18nLegacyMessageIdFormat": false
+          },
+          "files": [],
+          "include": [],
+          "references": [
+            {
+              "path": "./tsconfig.lib.json"
+            },
+            {
+              "path": "./tsconfig.spec.json"
+            }
+          ]
+        }
+        "
+      `);
+      expect(tree.read('lib1/tsconfig.lib.json', 'utf-8'))
+        .toMatchInlineSnapshot(`
+        "{
+          "extends": "./tsconfig.json",
+          "compilerOptions": {
+            "outDir": "dist",
+            "emitDeclarationOnly": false,
+            "declaration": true,
+            "declarationMap": true,
+            "inlineSources": true,
+            "types": []
+          },
+          "exclude": [
+            "src/**/*.spec.ts",
+            "src/test-setup.ts",
+            "jest.config.ts",
+            "src/**/*.test.ts"
+          ],
+          "include": [
+            "src/**/*.ts"
+          ]
+        }
+        "
+      `);
+      expect(tree.read('lib1/tsconfig.spec.json', 'utf-8'))
+        .toMatchInlineSnapshot(`
+        "{
+          "extends": "./tsconfig.json",
+          "compilerOptions": {
+            "outDir": "./out-tsc/jest",
+            "target": "es2016",
+            "types": [
+              "jest",
+              "node"
+            ]
+          },
+          "files": [
+            "src/test-setup.ts"
+          ],
+          "include": [
+            "jest.config.ts",
+            "src/**/*.test.ts",
+            "src/**/*.spec.ts",
+            "src/**/*.d.ts"
+          ],
+          "references": [
+            {
+              "path": "./tsconfig.lib.json"
+            }
+          ]
+        }
         "
       `);
     });

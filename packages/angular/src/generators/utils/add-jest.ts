@@ -10,6 +10,7 @@ import { versions } from './version-utils';
 export type AddJestOptions = {
   name: string;
   projectRoot: string;
+  runtimeTsconfigFileName: string;
   skipPackageJson: boolean;
   strict: boolean;
   addPlugin?: boolean;
@@ -48,6 +49,7 @@ export async function addJest(
     skipFormat: true,
     addPlugin: options.addPlugin ?? false,
     addExplicitTargets: !options.addPlugin,
+    runtimeTsconfigFileName: options.runtimeTsconfigFileName,
   });
 
   const setupFile = joinPathFragments(

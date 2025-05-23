@@ -1,16 +1,17 @@
 import {
   addProjectConfiguration,
   joinPathFragments,
-  type ProjectConfiguration,
+  writeJson,
   type Tree,
 } from '@nx/devkit';
 import { addBuildTargetDefaults } from '@nx/devkit/src/generators/target-defaults-utils';
+import type { PackageJson } from 'nx/src/utils/package-json';
 import type { AngularProjectConfiguration } from '../../../utils/types';
 import { getInstalledAngularVersionInfo } from '../../utils/version-utils';
 import type { NormalizedSchema } from './normalized-schema';
 
 export function createProject(tree: Tree, options: NormalizedSchema) {
-  let project: ProjectConfiguration;
+  let project: AngularProjectConfiguration;
 
   if (options.bundler === 'esbuild') {
     project = createProjectForEsbuild(tree, options);
@@ -18,7 +19,33 @@ export function createProject(tree: Tree, options: NormalizedSchema) {
     project = createProjectForWebpack(tree, options);
   }
 
-  addProjectConfiguration(tree, options.name, project);
+  const packageJson: PackageJson = {
+    name: options.name,
+    version: '0.0.1',
+    private: true,
+  };
+
+  if (options.useProjectJson !== false) {
+    addProjectConfiguration(tree, options.name, project);
+
+    if (options.isTsSolutionSetup) {
+      writeJson(
+        tree,
+        joinPathFragments(options.appProjectRoot, 'package.json'),
+        packageJson
+      );
+    }
+  } else {
+    writeJson(tree, joinPathFragments(options.appProjectRoot, 'package.json'), {
+      ...packageJson,
+      nx: {
+        name: options.name !== options.importPath ? options.name : undefined,
+        prefix: options.prefix,
+        tags: options.parsedTags.length ? options.parsedTags : undefined,
+        targets: project.targets,
+      } as AngularProjectConfiguration,
+    });
+  }
 }
 
 function createProjectForEsbuild(tree: Tree, options: NormalizedSchema) {

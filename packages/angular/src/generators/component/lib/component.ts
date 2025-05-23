@@ -6,6 +6,7 @@ import { locateLibraryEntryPointFromDirectory } from '../../utils/entry-point';
 import { getRelativeImportToFile } from '../../utils/path';
 import type { NormalizedSchema } from '../schema';
 import { findModuleFromOptions } from './module';
+import { getProjectType } from '@nx/js/src/utils/typescript/ts-solution-setup';
 
 export function exportComponentInEntryPoint(
   tree: Tree,
@@ -20,7 +21,7 @@ export function exportComponentInEntryPoint(
     schema.projectName
   );
 
-  if (projectType === 'application') {
+  if (getProjectType(tree, root, projectType) === 'application') {
     return;
   }
 

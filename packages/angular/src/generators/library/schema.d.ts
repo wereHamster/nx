@@ -38,4 +38,5 @@ export interface Schema {
   selector?: string;
   skipSelector?: boolean;
   addPlugin?: boolean;
+  useProjectJson?: boolean;
 }

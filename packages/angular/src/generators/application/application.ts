@@ -12,7 +12,8 @@ import {
 } from '@nx/devkit';
 import { logShowProjectCommand } from '@nx/devkit/src/utils/log-show-project-command';
 import { initGenerator as jsInitGenerator } from '@nx/js';
-import { assertNotUsingTsSolutionSetup } from '@nx/js/src/utils/typescript/ts-solution-setup';
+import { sortPackageJsonFields } from '@nx/js/src/utils/package-json/sort-fields';
+import { addProjectToTsSolutionWorkspace } from '@nx/js/src/utils/typescript/ts-solution-setup';
 import { convertToRspack } from '../convert-to-rspack/convert-to-rspack';
 import { angularInitGenerator } from '../init/init';
 import { setupSsr } from '../setup-ssr/setup-ssr';
@@ -31,33 +32,34 @@ import {
   addUnitTestRunner,
   createFiles,
   createProject,
-  enableStrictTypeChecking,
   normalizeOptions,
-  setApplicationStrictDefault,
   setGeneratorDefaults,
-  updateEditorTsConfig,
+  updateTsconfigFiles,
 } from './lib';
 import type { Schema } from './schema';
 
 export async function applicationGenerator(
   tree: Tree,
-  schema: Partial<Schema>
+  schema: Schema
 ): Promise<GeneratorCallback> {
-  assertNotUsingTsSolutionSetup(tree, 'angular', 'application');
+  // TODO(leo-ts): think about Angular versions lower than v20
   const isRspack = schema.bundler === 'rspack';
   if (isRspack) {
     schema.bundler = 'webpack';
   }
 
+  await jsInitGenerator(tree, {
+    ...schema,
+    tsConfigName: schema.rootProject ? 'tsconfig.json' : 'tsconfig.base.json',
+    js: false,
+    addTsPlugin: schema.useTsSolution,
+    formatter: schema.formatter,
+    skipFormat: true,
+  });
+
   const options = await normalizeOptions(tree, schema, isRspack);
   const rootOffset = offsetFromRoot(options.appProjectRoot);
 
-  await jsInitGenerator(tree, {
-    ...options,
-    tsConfigName: options.rootProject ? 'tsconfig.json' : 'tsconfig.base.json',
-    js: false,
-    skipFormat: true,
-  });
   await angularInitGenerator(tree, {
     ...options,
     skipFormat: true,
@@ -71,6 +73,12 @@ export async function applicationGenerator(
   createProject(tree, options);
 
   await createFiles(tree, options, rootOffset);
+
+  // If we are using the new TS solution
+  // We need to update the workspace file (package.json or pnpm-workspaces.yaml) to include the new project
+  if (options.isTsSolutionSetup) {
+    await addProjectToTsSolutionWorkspace(tree, options.appProjectRoot);
+  }
 
   if (options.addTailwind) {
     await setupTailwindGenerator(tree, {
@@ -88,7 +96,7 @@ export async function applicationGenerator(
     options,
     options.e2eTestRunner !== 'none' ? e2ePort : options.port
   );
-  updateEditorTsConfig(tree, options);
+  updateTsconfigFiles(tree, options);
   setGeneratorDefaults(tree, options);
 
   if (options.rootProject) {
@@ -99,12 +107,6 @@ export async function applicationGenerator(
 
   if (options.backendProject) {
     addProxyConfig(tree, options);
-  }
-
-  if (options.strict) {
-    enableStrictTypeChecking(tree, options);
-  } else {
-    setApplicationStrictDefault(tree, false);
   }
 
   if (options.ssr) {
@@ -160,6 +162,8 @@ export async function applicationGenerator(
       addDependenciesToPackageJson(tree, {}, devDependencies, undefined, true);
     }
   }
+
+  sortPackageJsonFields(tree, options.appProjectRoot);
 
   if (!options.skipFormat) {
     await formatFiles(tree);

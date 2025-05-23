@@ -12,7 +12,6 @@ import {
   ensureRootProjectName,
 } from '@nx/devkit/src/generators/project-name-and-root-utils';
 import { isValidVariable } from '@nx/js';
-import { assertNotUsingTsSolutionSetup } from '@nx/js/src/utils/typescript/ts-solution-setup';
 import { E2eTestRunner } from '../../utils/test-runners';
 import applicationGenerator from '../application/application';
 import remoteGenerator from '../remote/remote';
@@ -24,7 +23,6 @@ import { assertRspackIsCSR } from '../utils/assert-mf-utils';
 import convertToRspack from '../convert-to-rspack/convert-to-rspack';
 
 export async function host(tree: Tree, schema: Schema) {
-  assertNotUsingTsSolutionSetup(tree, 'angular', 'host');
   // TODO: Replace with Rspack when confidence is high enough
   schema.bundler ??= 'webpack';
   const isRspack = schema.bundler === 'rspack';

@@ -870,6 +870,10 @@ async function determineAngularOptions(
   let e2eTestRunner: undefined | 'none' | 'cypress' | 'playwright' = undefined;
   let bundler: undefined | 'webpack' | 'rspack' | 'esbuild' = undefined;
   let ssr: undefined | boolean = undefined;
+  let linter: undefined | 'none' | 'eslint';
+  let formatter: undefined | 'none' | 'prettier';
+
+  let workspaces = parsedArgs.workspaces;
 
   const standaloneApi = parsedArgs.standaloneApi;
   const routing = parsedArgs.routing;
@@ -898,13 +902,16 @@ async function determineAngularOptions(
 
     if (preset === Preset.AngularStandalone) {
       appName = parsedArgs.name;
+      workspaces = false;
     } else {
       appName = await determineAppName(parsedArgs);
     }
   } else {
-    const workspaceType = await determineStandaloneOrMonorepo();
+    const isStandalone = workspaces
+      ? false
+      : (await determineStandaloneOrMonorepo()) === 'standalone';
 
-    if (workspaceType === 'standalone') {
+    if (isStandalone) {
       preset = Preset.AngularStandalone;
       appName = parsedArgs.name;
     } else {
@@ -994,6 +1001,16 @@ async function determineAngularOptions(
   unitTestRunner = await determineUnitTestRunner(parsedArgs);
   e2eTestRunner = await determineE2eTestRunner(parsedArgs);
 
+  if (workspaces) {
+    linter = await determineLinterOptions(parsedArgs, { preferEslint: true });
+    formatter = await determineFormatterOptions(parsedArgs, {
+      preferPrettier: true,
+    });
+  } else {
+    linter = 'eslint';
+    formatter = 'prettier';
+  }
+
   return {
     preset,
     style,
@@ -1005,6 +1022,9 @@ async function determineAngularOptions(
     bundler,
     ssr,
     prefix,
+    linter,
+    formatter,
+    workspaces,
   };
 }
 

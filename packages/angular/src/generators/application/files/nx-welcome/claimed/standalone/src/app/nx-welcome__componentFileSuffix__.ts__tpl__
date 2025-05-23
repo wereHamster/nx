@@ -433,7 +433,7 @@ import { CommonModule } from '@angular/common';
         <div id="welcome">
           <h1>
             <span> Hello there, </span>
-            Welcome <%= appName %> 👋
+            Welcome <%- escapedAppName %> 👋
           </h1>
         </div>
         <!--  HERO  -->
@@ -715,13 +715,13 @@ import { CommonModule } from '@angular/common';
               Build, test and lint your app
             </summary>
             <pre><span># Build</span>
-nx build 
+nx build <%- escapedAppName %>
 <span># Test</span>
-nx test 
+nx test <%- escapedAppName %>
 <span># Lint</span>
-nx lint 
+nx lint <%- escapedAppName %>
 <span># Run them together!</span>
-nx run-many -t build test lint</pre>
+nx run-many -p <%- escapedAppName %> -t build test lint</pre>
           </details>
           <details>
             <summary>
@@ -740,7 +740,7 @@ nx run-many -t build test lint</pre>
               </svg>
               View project details
             </summary>
-            <pre>nx show project <%= appName %></pre>
+            <pre>nx show project <%- escapedAppName %></pre>
           </details>
 
           <details>

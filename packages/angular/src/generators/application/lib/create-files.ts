@@ -4,7 +4,6 @@ import {
   createNxCloudOnboardingURLForWelcomeApp,
   getNxCloudAppOnBoardingUrl,
 } from 'nx/src/nx-cloud/utilities/onboarding';
-import { lt } from 'semver';
 import { UnitTestRunner } from '../../../utils/test-runners';
 import {
   getComponentType,
@@ -20,10 +19,7 @@ export async function createFiles(
   options: NormalizedSchema,
   rootOffset: string
 ) {
-  const { major: angularMajorVersion, version: angularVersion } =
-    getInstalledAngularVersionInfo(tree);
-  const isUsingApplicationBuilder = options.bundler === 'esbuild';
-  const disableModernClassFieldsBehavior = lt(angularVersion, '18.1.0-rc.0');
+  const { major: angularMajorVersion } = getInstalledAngularVersionInfo(tree);
 
   const rootSelector = `${options.prefix}-root`;
   validateHtmlSelector(rootSelector);
@@ -46,6 +42,7 @@ export async function createFiles(
   const substitutions = {
     rootSelector,
     appName: options.name,
+    escapedAppName: options.name.replace('@', '&#64;'),
     inlineStyle: options.inlineStyle,
     inlineTemplate: options.inlineTemplate,
     style: options.style,
@@ -55,10 +52,7 @@ export async function createFiles(
     minimal: options.minimal,
     nxWelcomeSelector,
     rootTsConfig: joinPathFragments(rootOffset, getRootTsConfigFileName(tree)),
-    angularMajorVersion,
     rootOffset,
-    isUsingApplicationBuilder,
-    disableModernClassFieldsBehavior,
     // Angular v19 or higher defaults to true, while lower versions default to false
     setStandaloneFalse: angularMajorVersion >= 19,
     setStandaloneTrue: angularMajorVersion < 19,
@@ -67,6 +61,7 @@ export async function createFiles(
     componentType: componentType ? names(componentType).className : '',
     componentFileSuffix,
     moduleTypeSeparator,
+    isTsSolutionSetup: options.isTsSolutionSetup,
     connectCloudUrl,
     tutorialUrl: options.standalone
       ? 'https://nx.dev/getting-started/tutorials/angular-standalone-tutorial?utm_source=nx-project'
@@ -79,6 +74,15 @@ export async function createFiles(
   generateFiles(
     tree,
     joinPathFragments(__dirname, '../files/base'),
+    options.appProjectRoot,
+    substitutions
+  );
+
+  generateFiles(
+    tree,
+    options.isTsSolutionSetup
+      ? joinPathFragments(__dirname, '../files/tsconfig/ts-solution')
+      : joinPathFragments(__dirname, '../files/tsconfig/non-ts-solution'),
     options.appProjectRoot,
     substitutions
   );

@@ -31,4 +31,7 @@ export interface Schema {
   serverRouting?: boolean;
   nxCloudToken?: string;
   addPlugin?: boolean;
+  useTsSolution?: boolean;
+  formatter?: 'prettier' | 'none';
+  useProjectJson?: boolean;
 }

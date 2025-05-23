@@ -1,6 +1,7 @@
 import type { Tree } from '@nx/devkit';
 import { names, readProjectConfiguration } from '@nx/devkit';
 import { determineArtifactNameAndDirectoryOptions } from '@nx/devkit/src/generators/artifact-name-and-directory-utils';
+import { getProjectSourceRoot } from '@nx/js/src/utils/typescript/ts-solution-setup';
 import type { AngularProjectConfiguration } from '../../../utils/types';
 import { buildSelector, validateHtmlSelector } from '../../utils/selector';
 import { validateClassName } from '../../utils/validations';
@@ -60,7 +61,7 @@ export async function normalizeOptions(
     fileName,
     filePath,
     symbolName,
-    projectSourceRoot: sourceRoot,
+    projectSourceRoot: getProjectSourceRoot(tree, sourceRoot, root),
     projectRoot: root,
     selector,
   };

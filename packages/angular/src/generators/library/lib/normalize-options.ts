@@ -3,6 +3,7 @@ import {
   determineProjectNameAndRootOptions,
   ensureRootProjectName,
 } from '@nx/devkit/src/generators/project-name-and-root-utils';
+import { isUsingTsSolutionSetup } from '@nx/js/src/utils/typescript/ts-solution-setup';
 import { UnitTestRunner } from '../../../utils/test-runners';
 import {
   getComponentType,
@@ -15,6 +16,13 @@ export async function normalizeOptions(
   host: Tree,
   schema: Schema
 ): Promise<NormalizedSchema> {
+  const isTsSolutionSetup = isUsingTsSolutionSetup(host);
+  if (schema.publishable === true && !schema.importPath && !isTsSolutionSetup) {
+    throw new Error(
+      `For publishable libs you have to provide a proper "--importPath" which needs to be a valid npm package name (e.g. my-awesome-lib or @myorg/my-lib)`
+    );
+  }
+
   schema.standalone = schema.standalone ?? true;
   // Create a schema with populated default values
   const options: Schema = {
@@ -57,12 +65,16 @@ export async function normalizeOptions(
   const modulePath = `${projectRoot}/src/lib/${fileName}${moduleTypeSeparator}module.ts`;
 
   const ngCliSchematicLibRoot = projectName;
+
+  // We default to generate a project.json file if the new setup is not being used
+  const useProjectJson = !isTsSolutionSetup;
+
   const allNormalizedOptions = {
     ...options,
     linter: options.linter ?? 'eslint',
     unitTestRunner: options.unitTestRunner ?? UnitTestRunner.Jest,
     prefix: options.prefix ?? 'lib',
-    name: projectName,
+    name: isTsSolutionSetup && !options.name ? importPath : projectName,
     projectRoot,
     entryFile: 'index',
     moduleName,
@@ -76,6 +88,8 @@ export async function normalizeOptions(
       names(projectNames.projectSimpleName).className
     }Component`,
     moduleTypeSeparator,
+    useProjectJson,
+    isTsSolutionSetup,
   };
 
   const {

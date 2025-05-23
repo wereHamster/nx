@@ -1,6 +1,7 @@
 import { getInstalledCypressMajorVersion } from '@nx/cypress/src/utils/versions';
 import * as devkit from '@nx/devkit';
 import {
+  detectPackageManager,
   NxJsonConfiguration,
   parseJson,
   readJson,
@@ -10,6 +11,7 @@ import {
   updateJson,
   updateNxJson,
   updateProjectConfiguration,
+  writeJson,
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as enquirer from 'enquirer';
@@ -24,6 +26,8 @@ import {
 } from '../../utils/versions';
 import { generateTestApplication } from '../utils/testing';
 import type { Schema } from './schema';
+
+const { load } = require('@zkochan/js-yaml');
 
 // need to mock cypress otherwise it'll use installed version in this repo's package.json
 jest.mock('@nx/cypress/src/utils/versions', () => ({
@@ -40,6 +44,7 @@ jest.mock('@nx/devkit', () => {
       nodes: {},
       dependencies: {},
     }),
+    detectPackageManager: jest.fn(),
   };
 });
 
@@ -55,7 +60,10 @@ describe('app', () => {
     enquirer.prompt = jest
       .fn()
       .mockReturnValue(Promise.resolve({ 'standalone-components': true }));
-    appTree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
+    appTree = createTreeWithEmptyWorkspace();
+    (detectPackageManager as jest.Mock).mockImplementation((...args) =>
+      jest.requireActual('@nx/devkit').detectPackageManager(...args)
+    );
   });
 
   it('should add angular dependencies', async () => {
@@ -276,15 +284,6 @@ describe('app', () => {
       expect(defaultProject).toBe('some-awesome-project');
     });
 
-    it('should set esModuleInterop when using the application builder', async () => {
-      await generateApp(appTree, 'my-app');
-
-      expect(
-        readJson(appTree, 'my-app/tsconfig.json').compilerOptions
-          .esModuleInterop
-      ).toBe(true);
-    });
-
     it('should not set esModuleInterop when using the browser-esbuild builder', async () => {
       await generateApp(appTree, 'my-app', { bundler: 'webpack' });
       const project = readProjectConfiguration(appTree, 'my-app');
@@ -405,7 +404,7 @@ describe('app', () => {
 
   describe('at the root', () => {
     beforeEach(() => {
-      appTree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
+      appTree = createTreeWithEmptyWorkspace();
       updateJson(appTree, 'nx.json', (json) => ({
         ...json,
         workspaceLayout: { appsDir: '' },
@@ -467,14 +466,6 @@ describe('app', () => {
           expectedValue: ['../../.eslintrc.json'],
         },
       ].forEach(hasJsonValue);
-    });
-
-    it('should set esModuleInterop when using the application builder', async () => {
-      await generateApp(appTree, '.', { name: 'my-app' });
-
-      expect(
-        readJson(appTree, 'tsconfig.json').compilerOptions.esModuleInterop
-      ).toBe(true);
     });
 
     it('should not set esModuleInterop when using the browser builder', async () => {
@@ -1319,7 +1310,7 @@ describe('app', () => {
 
   describe('angular compat support', () => {
     beforeEach(() => {
-      appTree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
+      appTree = createTreeWithEmptyWorkspace();
       updateJson(appTree, 'package.json', (json) => ({
         ...json,
         dependencies: {
@@ -1461,6 +1452,14 @@ describe('app', () => {
       `);
     });
 
+    it('should set esModuleInterop compiler option when using the application builder for versions lower than v20', async () => {
+      await generateApp(appTree, '.', { name: 'my-app', bundler: 'esbuild' });
+
+      expect(
+        readJson(appTree, 'tsconfig.json').compilerOptions.esModuleInterop
+      ).toBe(true);
+    });
+
     it('should use platformBrowserDynamic for versions lower than v20', async () => {
       updateJson(appTree, 'package.json', (json) => ({
         ...json,
@@ -1541,6 +1540,330 @@ describe('app', () => {
           .catch((err) => console.error(err));
         "
       `);
+    });
+  });
+
+  describe('TS solution setup', () => {
+    beforeEach(() => {
+      appTree = createTreeWithEmptyWorkspace();
+      updateJson(appTree, 'package.json', (json) => {
+        json.workspaces = ['packages/*', 'apps/*'];
+        return json;
+      });
+      writeJson(appTree, 'tsconfig.base.json', {
+        compilerOptions: {
+          composite: true,
+          declaration: true,
+        },
+      });
+      writeJson(appTree, 'tsconfig.json', {
+        extends: './tsconfig.base.json',
+        files: [],
+        references: [],
+      });
+    });
+
+    it('should add project references when using TS solution', async () => {
+      await generateTestApplication(appTree, {
+        directory: 'myapp',
+        skipFormat: true,
+      });
+
+      expect(readJson(appTree, 'tsconfig.json').references)
+        .toMatchInlineSnapshot(`
+        [
+          {
+            "path": "./myapp-e2e",
+          },
+          {
+            "path": "./myapp",
+          },
+        ]
+      `);
+      expect(readJson(appTree, 'myapp/project.json').name).toBe('@proj/myapp');
+      const packageJson = readJson(appTree, 'myapp/package.json');
+      expect(packageJson.name).toBe('@proj/myapp');
+      expect(packageJson.nx).toBeUndefined();
+      expect(readJson(appTree, 'myapp/tsconfig.json')).toMatchInlineSnapshot(`
+        {
+          "angularCompilerOptions": {
+            "enableI18nLegacyMessageIdFormat": false,
+            "strictInjectionParameters": true,
+            "strictInputAccessModifiers": true,
+            "strictTemplates": true,
+            "typeCheckHostBindings": true,
+          },
+          "compilerOptions": {
+            "experimentalDecorators": true,
+            "importHelpers": true,
+            "isolatedModules": true,
+            "module": "preserve",
+            "noFallthroughCasesInSwitch": true,
+            "noImplicitOverride": true,
+            "noImplicitReturns": true,
+            "noPropertyAccessFromIndexSignature": true,
+            "skipLibCheck": true,
+            "strict": true,
+            "target": "es2022",
+          },
+          "extends": "../tsconfig.base.json",
+          "files": [],
+          "include": [],
+          "nx": {
+            "addTypecheckTarget": false,
+          },
+          "references": [
+            {
+              "path": "./tsconfig.app.json",
+            },
+            {
+              "path": "./tsconfig.spec.json",
+            },
+          ],
+        }
+      `);
+      expect(readJson(appTree, 'myapp/tsconfig.app.json'))
+        .toMatchInlineSnapshot(`
+        {
+          "compilerOptions": {
+            "emitDeclarationOnly": false,
+            "outDir": "dist",
+            "types": [],
+          },
+          "exclude": [
+            "jest.config.ts",
+            "src/**/*.test.ts",
+            "src/**/*.spec.ts",
+          ],
+          "extends": "./tsconfig.json",
+          "include": [
+            "src/**/*.ts",
+          ],
+        }
+      `);
+      expect(readJson(appTree, 'myapp/tsconfig.spec.json'))
+        .toMatchInlineSnapshot(`
+        {
+          "compilerOptions": {
+            "outDir": "./out-tsc/jest",
+            "target": "es2016",
+            "types": [
+              "jest",
+              "node",
+            ],
+          },
+          "extends": "./tsconfig.json",
+          "files": [
+            "src/test-setup.ts",
+          ],
+          "include": [
+            "jest.config.ts",
+            "src/**/*.test.ts",
+            "src/**/*.spec.ts",
+            "src/**/*.d.ts",
+          ],
+          "references": [
+            {
+              "path": "./tsconfig.app.json",
+            },
+          ],
+        }
+      `);
+      expect(readJson(appTree, 'myapp-e2e/tsconfig.json'))
+        .toMatchInlineSnapshot(`
+        {
+          "compilerOptions": {
+            "allowJs": true,
+            "noFallthroughCasesInSwitch": true,
+            "noImplicitOverride": true,
+            "noImplicitReturns": true,
+            "noPropertyAccessFromIndexSignature": true,
+            "outDir": "out-tsc/playwright",
+            "sourceMap": false,
+            "strict": true,
+          },
+          "exclude": [
+            "out-tsc",
+            "test-output",
+            "eslint.config.js",
+            "eslint.config.mjs",
+            "eslint.config.cjs",
+          ],
+          "extends": "../tsconfig.base.json",
+          "include": [
+            "**/*.ts",
+            "**/*.js",
+            "playwright.config.ts",
+            "src/**/*.spec.ts",
+            "src/**/*.spec.js",
+            "src/**/*.test.ts",
+            "src/**/*.test.js",
+            "src/**/*.d.ts",
+          ],
+        }
+      `);
+    });
+
+    it('should generate the nx project configuration in package.json when useProjectJson is false', async () => {
+      await generateTestApplication(appTree, {
+        directory: 'myapp',
+        useProjectJson: false,
+        skipFormat: true,
+      });
+
+      expect(appTree.exists('myapp/project.json')).toBe(false);
+      expect(appTree.read('myapp/package.json', 'utf-8'))
+        .toMatchInlineSnapshot(`
+        "{
+          "name": "@proj/myapp",
+          "version": "0.0.1",
+          "private": true,
+          "nx": {
+            "prefix": "app",
+            "targets": {
+              "build": {
+                "executor": "@angular/build:application",
+                "outputs": [
+                  "{options.outputPath}"
+                ],
+                "options": {
+                  "outputPath": "myapp/dist",
+                  "browser": "myapp/src/main.ts",
+                  "polyfills": [
+                    "zone.js"
+                  ],
+                  "tsConfig": "myapp/tsconfig.app.json",
+                  "assets": [
+                    {
+                      "glob": "**/*",
+                      "input": "myapp/public"
+                    }
+                  ],
+                  "styles": [
+                    "myapp/src/styles.css"
+                  ]
+                },
+                "configurations": {
+                  "production": {
+                    "budgets": [
+                      {
+                        "type": "initial",
+                        "maximumWarning": "500kb",
+                        "maximumError": "1mb"
+                      },
+                      {
+                        "type": "anyComponentStyle",
+                        "maximumWarning": "4kb",
+                        "maximumError": "8kb"
+                      }
+                    ],
+                    "outputHashing": "all"
+                  },
+                  "development": {
+                    "optimization": false,
+                    "extractLicenses": false,
+                    "sourceMap": true
+                  }
+                },
+                "defaultConfiguration": "production"
+              },
+              "serve": {
+                "continuous": true,
+                "executor": "@angular/build:dev-server",
+                "configurations": {
+                  "production": {
+                    "buildTarget": "@proj/myapp:build:production"
+                  },
+                  "development": {
+                    "buildTarget": "@proj/myapp:build:development"
+                  }
+                },
+                "defaultConfiguration": "development"
+              },
+              "extract-i18n": {
+                "executor": "@angular/build:extract-i18n",
+                "options": {
+                  "buildTarget": "@proj/myapp:build"
+                }
+              },
+              "lint": {
+                "executor": "@nx/eslint:lint"
+              },
+              "test": {
+                "executor": "@nx/jest:jest",
+                "outputs": [
+                  "{projectRoot}/test-output/jest/coverage"
+                ],
+                "options": {
+                  "jestConfig": "myapp/jest.config.ts"
+                }
+              },
+              "serve-static": {
+                "continuous": true,
+                "executor": "@nx/web:file-server",
+                "options": {
+                  "buildTarget": "@proj/myapp:build",
+                  "port": 4200,
+                  "staticFilePath": "myapp/dist/browser",
+                  "spa": true
+                }
+              }
+            }
+          }
+        }
+        "
+      `);
+    });
+
+    it('should add project to workspaces when using TS solution (npm, yarn, bun)', async () => {
+      await generateTestApplication(appTree, {
+        directory: 'myapp',
+        skipFormat: true,
+      });
+      await generateTestApplication(appTree, {
+        directory: 'projects/nested1',
+        skipFormat: true,
+      });
+      await generateTestApplication(appTree, {
+        directory: 'projects/nested2',
+        skipFormat: true,
+      });
+
+      const packageJson = readJson(appTree, 'package.json');
+      expect(packageJson.workspaces).toStrictEqual([
+        'packages/*',
+        'apps/*',
+        'myapp',
+        'projects/*',
+      ]);
+    });
+
+    it('should add project to workspaces when using TS solution (pnpm)', async () => {
+      (detectPackageManager as jest.Mock).mockReturnValue('pnpm');
+      updateJson(appTree, 'package.json', (json) => {
+        delete json.workspaces;
+        return json;
+      });
+      appTree.write('pnpm-lock.yaml', '');
+      appTree.write('pnpm-workspace.yaml', `packages:`);
+
+      await generateTestApplication(appTree, {
+        directory: 'myapp',
+        skipFormat: true,
+      });
+      await generateTestApplication(appTree, {
+        directory: 'projects/nested1',
+        skipFormat: true,
+      });
+      await generateTestApplication(appTree, {
+        directory: 'projects/nested2',
+        skipFormat: true,
+      });
+
+      const pnpmContent = appTree.read('pnpm-workspace.yaml', 'utf-8');
+      const pnpmWorkspaceFile = load(pnpmContent);
+
+      expect(pnpmWorkspaceFile.packages).toStrictEqual(['myapp', 'projects/*']);
     });
   });
 });

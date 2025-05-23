@@ -14,4 +14,6 @@ export interface NormalizedSchema extends Schema {
   e2eProjectRoot: string;
   parsedTags: string[];
   outputPath: string;
+  importPath: string;
+  isTsSolutionSetup: boolean;
 }

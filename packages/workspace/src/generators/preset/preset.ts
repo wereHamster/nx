@@ -27,7 +27,7 @@ async function createPreset(tree: Tree, options: Schema) {
     } = require('@nx' + '/angular/generators');
 
     return angularApplicationGenerator(tree, {
-      name: options.name,
+      name: options.workspaces ? undefined : options.name,
       directory: join('apps', options.name),
       style: options.style,
       linter: options.linter,
@@ -39,6 +39,9 @@ async function createPreset(tree: Tree, options: Schema) {
       ssr: options.ssr,
       prefix: options.prefix,
       nxCloudToken: options.nxCloudToken,
+      useTsSolution: options.workspaces,
+      formatter: options.formatter,
+      useProjectJson: options.useProjectJson,
     });
   } else if (options.preset === Preset.AngularStandalone) {
     const {

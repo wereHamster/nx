@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "emitDeclarationOnly": false,
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "types": []
+  },
+  "exclude": [
+    "src/**/*.spec.ts",<% if(unitTesting) { %>
+    "src/test-setup.ts",<% } %>
+    "jest.config.ts",
+    "src/**/*.test.ts"
+  ],
+  "include": ["src/**/*.ts"]
+}

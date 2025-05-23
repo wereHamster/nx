@@ -55,6 +55,36 @@
       "default": true,
       "x-priority": "important"
     },
+    "bundler": {
+      "description": "Bundler to use to build the application.",
+      "type": "string",
+      "enum": ["esbuild", "rspack", "webpack"],
+      "default": "esbuild",
+      "x-prompt": "Which bundler do you want to use to build the application?",
+      "x-priority": "important"
+    },
+    "linter": {
+      "description": "The tool to use for running lint checks.",
+      "type": "string",
+      "enum": ["eslint", "none"],
+      "default": "none",
+      "x-prompt": "Which linter would you like to use?",
+      "x-priority": "important"
+    },
+    "unitTestRunner": {
+      "type": "string",
+      "enum": ["jest", "vitest", "none"],
+      "description": "Test runner to use for unit tests.",
+      "x-prompt": "Which unit test runner would you like to use?",
+      "default": "none",
+      "x-priority": "important"
+    },
+    "standalone": {
+      "description": "Generate an application that is setup to use standalone components.",
+      "type": "boolean",
+      "default": true,
+      "x-priority": "important"
+    },
     "inlineStyle": {
       "description": "Specifies if the style will be in the ts file.",
       "type": "boolean",
@@ -97,13 +127,6 @@
       "description": "Do not add dependencies to `package.json`.",
       "x-priority": "internal"
     },
-    "unitTestRunner": {
-      "type": "string",
-      "enum": ["jest", "vitest", "none"],
-      "description": "Test runner to use for unit tests.",
-      "x-prompt": "Which unit test runner would you like to use?",
-      "default": "jest"
-    },
     "e2eTestRunner": {
       "type": "string",
       "enum": ["playwright", "cypress", "none"],
@@ -114,12 +137,6 @@
     "tags": {
       "type": "string",
       "description": "Add tags to the application (used for linting)."
-    },
-    "linter": {
-      "description": "The tool to use for running lint checks.",
-      "type": "string",
-      "enum": ["eslint", "none"],
-      "default": "eslint"
     },
     "backendProject": {
       "type": "string",
@@ -144,12 +161,6 @@
       "description": "Whether to configure Tailwind CSS for the application.",
       "default": false
     },
-    "standalone": {
-      "description": "Generate an application that is setup to use standalone components.",
-      "type": "boolean",
-      "default": true,
-      "x-priority": "important"
-    },
     "rootProject": {
       "description": "Create an application at the root of the workspace.",
       "type": "boolean",
@@ -162,14 +173,6 @@
       "type": "boolean",
       "default": false
     },
-    "bundler": {
-      "description": "Bundler to use to build the application.",
-      "type": "string",
-      "enum": ["esbuild", "rspack", "webpack"],
-      "default": "esbuild",
-      "x-prompt": "Which bundler do you want to use to build the application?",
-      "x-priority": "important"
-    },
     "ssr": {
       "description": "Creates an application with Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering) enabled.",
       "type": "boolean",
@@ -179,6 +182,10 @@
     "serverRouting": {
       "description": "Creates a server application using the Server Routing and App Engine APIs for application using the `application` builder (Developer Preview). _Note: this is only supported in Angular versions 19.x.x_. From Angular 20 onwards, SSR will always enable server routing when using the `application` builder.",
       "type": "boolean"
+    },
+    "useProjectJson": {
+      "type": "boolean",
+      "description": "Use a `project.json` configuration file instead of inlining the Nx configuration in the `package.json` file."
     }
   },
   "additionalProperties": false,

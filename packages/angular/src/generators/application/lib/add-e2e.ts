@@ -1,4 +1,4 @@
-import { Tree } from '@nx/devkit';
+import { Tree, writeJson } from '@nx/devkit';
 import {
   addProjectConfiguration,
   ensurePackage,
@@ -9,6 +9,7 @@ import {
 import { nxVersion } from '../../../utils/versions';
 import type { NormalizedSchema } from './normalized-schema';
 import { E2EWebServerDetails } from '@nx/devkit/src/generators/e2e-web-server-info-utils';
+import type { PackageJson } from 'nx/src/utils/package-json';
 
 export async function addE2e(tree: Tree, options: NormalizedSchema) {
   // since e2e are separate projects, default to adding plugins
@@ -23,19 +24,42 @@ export async function addE2e(tree: Tree, options: NormalizedSchema) {
     options.port
   );
 
+  const packageJson: PackageJson = {
+    name: options.e2eProjectName,
+    version: '0.0.1',
+    private: true,
+  };
+
+  const useProjectJson =
+    options.useProjectJson === true ||
+    (options.useProjectJson === undefined && options.isTsSolutionSetup);
+
   if (options.e2eTestRunner === 'cypress') {
     const { configurationGenerator } = ensurePackage<
       typeof import('@nx/cypress')
     >('@nx/cypress', nxVersion);
 
-    addProjectConfiguration(tree, options.e2eProjectName, {
-      projectType: 'application',
-      root: options.e2eProjectRoot,
-      sourceRoot: joinPathFragments(options.e2eProjectRoot, 'src'),
-      targets: {},
-      tags: [],
-      implicitDependencies: [options.name],
-    });
+    if (useProjectJson) {
+      packageJson.nx = { implicitDependencies: [options.name] };
+    } else {
+      addProjectConfiguration(tree, options.e2eProjectName, {
+        projectType: 'application',
+        root: options.e2eProjectRoot,
+        sourceRoot: joinPathFragments(options.e2eProjectRoot, 'src'),
+        targets: {},
+        tags: [],
+        implicitDependencies: [options.name],
+      });
+    }
+
+    if (useProjectJson || options.isTsSolutionSetup) {
+      writeJson(
+        tree,
+        joinPathFragments(options.e2eProjectRoot, 'package.json'),
+        packageJson
+      );
+    }
+
     await configurationGenerator(tree, {
       project: options.e2eProjectName,
       directory: 'src',
@@ -57,13 +81,27 @@ export async function addE2e(tree: Tree, options: NormalizedSchema) {
     const { configurationGenerator } = ensurePackage<
       typeof import('@nx/playwright')
     >('@nx/playwright', nxVersion);
-    addProjectConfiguration(tree, options.e2eProjectName, {
-      projectType: 'application',
-      root: options.e2eProjectRoot,
-      sourceRoot: joinPathFragments(options.e2eProjectRoot, 'src'),
-      targets: {},
-      implicitDependencies: [options.name],
-    });
+
+    if (useProjectJson) {
+      packageJson.nx = { implicitDependencies: [options.name] };
+    } else {
+      addProjectConfiguration(tree, options.e2eProjectName, {
+        projectType: 'application',
+        root: options.e2eProjectRoot,
+        sourceRoot: joinPathFragments(options.e2eProjectRoot, 'src'),
+        targets: {},
+        implicitDependencies: [options.name],
+      });
+    }
+
+    if (useProjectJson || options.isTsSolutionSetup) {
+      writeJson(
+        tree,
+        joinPathFragments(options.e2eProjectRoot, 'package.json'),
+        packageJson
+      );
+    }
+
     await configurationGenerator(tree, {
       project: options.e2eProjectName,
       skipFormat: true,

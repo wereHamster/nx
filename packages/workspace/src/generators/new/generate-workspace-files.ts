@@ -403,7 +403,8 @@ function setUpWorkspacesInPackageJson(tree: Tree, options: NormalizedSchema) {
     (options.preset === Preset.TS &&
       process.env.NX_ADD_PLUGINS !== 'false' &&
       options.workspaces) ||
-    ((options.preset === Preset.Expo ||
+    ((options.preset === Preset.AngularMonorepo ||
+      options.preset === Preset.Expo ||
       options.preset === Preset.NextJs ||
       options.preset === Preset.ReactMonorepo ||
       options.preset === Preset.ReactNative ||

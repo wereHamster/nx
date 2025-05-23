@@ -3,6 +3,7 @@ import {
   determineProjectNameAndRootOptions,
   ensureRootProjectName,
 } from '@nx/devkit/src/generators/project-name-and-root-utils';
+import { isUsingTsSolutionSetup } from '@nx/js/src/utils/typescript/ts-solution-setup';
 import { E2eTestRunner, UnitTestRunner } from '../../../utils/test-runners';
 import type { Schema } from '../schema';
 import type { NormalizedSchema } from './normalized-schema';
@@ -19,14 +20,23 @@ export async function normalizeOptions(
   isRspack?: boolean
 ): Promise<NormalizedSchema> {
   await ensureRootProjectName(options as Schema, 'application');
-  const { projectName: appProjectName, projectRoot: appProjectRoot } =
-    await determineProjectNameAndRootOptions(host, {
-      name: options.name,
-      projectType: 'application',
-      directory: options.directory,
-      rootProject: options.rootProject,
-    });
+  const {
+    projectName,
+    projectRoot: appProjectRoot,
+    importPath,
+  } = await determineProjectNameAndRootOptions(host, {
+    name: options.name,
+    projectType: 'application',
+    directory: options.directory,
+    rootProject: options.rootProject,
+  });
   options.rootProject = appProjectRoot === '.';
+
+  const addPlugin =
+    options.addPlugin ?? (!arePluginsExplicitlyDisabled(host) && isRspack);
+  const isTsSolutionSetup = isUsingTsSolutionSetup(host);
+  const appProjectName =
+    !isTsSolutionSetup || options.name ? projectName : importPath;
 
   const e2eProjectName = options.rootProject ? 'e2e' : `${appProjectName}-e2e`;
   const e2eProjectRoot = options.rootProject ? 'e2e' : `${appProjectRoot}-e2e`;
@@ -36,9 +46,6 @@ export async function normalizeOptions(
     : [];
 
   const bundler = options.bundler ?? 'esbuild';
-
-  const addPlugin =
-    options.addPlugin ?? (!arePluginsExplicitlyDisabled(host) && isRspack);
 
   // Set defaults and then overwrite with user options
   return {
@@ -57,17 +64,21 @@ export async function normalizeOptions(
     ...options,
     prefix: options.prefix || 'app',
     name: appProjectName,
+    importPath,
     appProjectRoot,
     appProjectSourceRoot: `${appProjectRoot}/src`,
     e2eProjectRoot,
     e2eProjectName,
     parsedTags,
     bundler,
-    outputPath: joinPathFragments(
-      'dist',
-      !options.rootProject ? appProjectRoot : appProjectName
-    ),
+    outputPath: isTsSolutionSetup
+      ? joinPathFragments(appProjectRoot, 'dist')
+      : joinPathFragments(
+          'dist',
+          !options.rootProject ? appProjectRoot : appProjectName
+        ),
     ssr: options.ssr ?? false,
     unitTestRunner: options.unitTestRunner ?? UnitTestRunner.Jest,
+    isTsSolutionSetup,
   };
 }

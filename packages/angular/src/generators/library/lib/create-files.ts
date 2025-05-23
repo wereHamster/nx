@@ -6,17 +6,10 @@ import {
   offsetFromRoot,
 } from '@nx/devkit';
 import { getRootTsConfigFileName } from '@nx/js';
-import { lt, parse } from 'semver';
 import { UnitTestRunner } from '../../../utils/test-runners';
-import type { AngularProjectConfiguration } from '../../../utils/types';
-import { getInstalledAngularVersion } from '../../utils/version-utils';
 import type { NormalizedSchema } from './normalized-schema';
 
-export function createFiles(
-  tree: Tree,
-  options: NormalizedSchema,
-  project: AngularProjectConfiguration
-) {
+export function createFiles(tree: Tree, options: NormalizedSchema) {
   const rootOffset = offsetFromRoot(options.libraryOptions.projectRoot);
   const libNames = names(options.libraryOptions.fileName);
   const pathToComponent = options.componentOptions.flat
@@ -25,10 +18,6 @@ export function createFiles(
         options.libraryOptions.fileName,
         options.libraryOptions.fileName
       );
-
-  const version = getInstalledAngularVersion(tree);
-  const { major, minor } = parse(version);
-  const disableModernClassFieldsBehavior = lt(version, '18.1.0-rc.0');
 
   const componentType = options.componentOptions.type
     ? names(options.componentOptions.type).className
@@ -50,8 +39,7 @@ export function createFiles(
     pathToComponent,
     importPath: options.libraryOptions.importPath,
     rootOffset,
-    angularPeerDepVersion: `^${major}.${minor}.0`,
-    disableModernClassFieldsBehavior,
+    isTsSolutionSetup: options.libraryOptions.isTsSolutionSetup,
     componentType,
     componentFileSuffix,
     moduleTypeSeparator: options.libraryOptions.moduleTypeSeparator,
@@ -61,6 +49,15 @@ export function createFiles(
   generateFiles(
     tree,
     joinPathFragments(__dirname, '../files/base'),
+    options.libraryOptions.projectRoot,
+    substitutions
+  );
+
+  generateFiles(
+    tree,
+    options.libraryOptions.isTsSolutionSetup
+      ? joinPathFragments(__dirname, '../files/tsconfig/ts-solution')
+      : joinPathFragments(__dirname, '../files/tsconfig/non-ts-solution'),
     options.libraryOptions.projectRoot,
     substitutions
   );
@@ -86,15 +83,26 @@ export function createFiles(
   }
 
   if (!options.libraryOptions.routing) {
-    tree.delete(joinPathFragments(project.sourceRoot, `lib/lib.routes.ts`));
+    tree.delete(
+      joinPathFragments(
+        options.libraryOptions.projectRoot,
+        'src/lib/lib.routes.ts'
+      )
+    );
   }
 
   if (
     !options.libraryOptions.buildable &&
     !options.libraryOptions.publishable
   ) {
-    tree.delete(joinPathFragments(project.root, `tsconfig.lib.prod.json`));
-    tree.delete(joinPathFragments(project.root, `ng-package.json`));
-    tree.delete(joinPathFragments(project.root, `package.json`));
+    tree.delete(
+      joinPathFragments(
+        options.libraryOptions.projectRoot,
+        `tsconfig.lib.prod.json`
+      )
+    );
+    tree.delete(
+      joinPathFragments(options.libraryOptions.projectRoot, `ng-package.json`)
+    );
   }
 }

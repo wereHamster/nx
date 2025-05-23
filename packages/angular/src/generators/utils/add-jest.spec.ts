@@ -23,6 +23,7 @@ describe('addJest', () => {
       projectRoot: 'app1',
       skipPackageJson: false,
       strict: false,
+      runtimeTsconfigFileName: 'tsconfig.app.json',
     });
 
     expect(tree.read('app1/src/test-setup.ts', 'utf-8')).toMatchInlineSnapshot(`
@@ -39,6 +40,7 @@ describe('addJest', () => {
       projectRoot: 'app1',
       skipPackageJson: false,
       strict: true,
+      runtimeTsconfigFileName: 'tsconfig.app.json',
     });
 
     expect(tree.read('app1/src/test-setup.ts', 'utf-8')).toMatchInlineSnapshot(`
