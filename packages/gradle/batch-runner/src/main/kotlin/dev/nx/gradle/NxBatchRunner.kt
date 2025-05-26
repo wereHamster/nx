@@ -26,14 +26,18 @@ fun main(args: Array<String>) {
     exitProcess(1)
   }
 
-  var connection: ProjectConnection? = null
+  var buildConnection: ProjectConnection? = null
+  var testConnection: ProjectConnection? = null
 
   try {
-    connection =
-        GradleConnector.newConnector().forProjectDirectory(File(options.workspaceRoot)).connect()
+    val connector = GradleConnector.newConnector().forProjectDirectory(File(options.workspaceRoot))
+
+    buildConnection = connector.connect()
+    testConnection = connector.connect()
 
     val results = runBlocking {
-      runTasksInParallel(connection, options.tasks, options.args, options.excludeTasks)
+      runTasksInParallel(
+          buildConnection, testConnection, options.tasks, options.args, options.excludeTasks)
     }
 
     val reportJson = Gson().toJson(results)
@@ -47,7 +51,8 @@ fun main(args: Array<String>) {
     exitProcess(1)
   } finally {
     try {
-      connection?.close()
+      buildConnection?.close()
+      testConnection?.close()
       logger.info("✅ Gradle connection closed.")
     } catch (e: Exception) {
       logger.warning("⚠️ Failed to close Gradle connection cleanly: ${e.message}")

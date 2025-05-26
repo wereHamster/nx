@@ -14,7 +14,8 @@ import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.events.OperationType
 
 suspend fun runTasksInParallel(
-    connection: ProjectConnection,
+    buildConnection: ProjectConnection,
+    testConnection: ProjectConnection,
     tasks: Map<String, GradleTask>,
     additionalArgs: String,
     excludeTasks: List<String>
@@ -49,7 +50,7 @@ suspend fun runTasksInParallel(
   val buildJob = async {
     if (buildTasks.isNotEmpty()) {
       runBuildLauncher(
-          connection,
+          buildConnection,
           buildTasks.associate { it.key to it.value },
           args,
           outputStream1,
@@ -60,7 +61,7 @@ suspend fun runTasksInParallel(
   val testJob = async {
     if (testClassTasks.isNotEmpty()) {
       runTestLauncher(
-          connection,
+          testConnection,
           testClassTasks.associate { it.key to it.value },
           args,
           outputStream2,
