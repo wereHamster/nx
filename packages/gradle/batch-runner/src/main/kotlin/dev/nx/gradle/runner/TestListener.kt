@@ -3,6 +3,8 @@ package dev.nx.gradle.runner
 import dev.nx.gradle.data.GradleTask
 import dev.nx.gradle.data.TaskResult
 import dev.nx.gradle.util.logger
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.gradle.tooling.CancellationTokenSource
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.task.TaskFinishEvent
@@ -19,14 +21,19 @@ fun testListener(
     expectedTestTasks: List<String>,
     cancellationTokenSource: CancellationTokenSource
 ): (ProgressEvent) -> Unit {
+  val runningTasks = mutableSetOf<String>()
   val completedTasks = mutableSetOf<String>()
+  var lastTaskId: String? = null
+
   return { event ->
+    logger.info("event $event")
     when (event) {
       is TaskStartEvent,
       is TaskFinishEvent -> buildListener(tasks, taskStartTimes, taskResults)(event)
 
       is TestStartEvent -> {
-        logger.info("TestStartEvent $event")
+        runningTasks.add(event.descriptor.name)
+        logger.info("TestStartEvent $event ${event.descriptor.name}")
         ((event.descriptor as? JvmTestOperationDescriptor)?.className?.let { className ->
           tasks.entries
               .find { entry ->
@@ -42,21 +49,26 @@ fun testListener(
       }
 
       is TestFinishEvent -> {
-        if ((event.descriptor as? JvmTestOperationDescriptor)?.className == null &&
-            event.descriptor.name.startsWith("Gradle Test Run ")) {
+        runningTasks.remove(event.descriptor.name)
+        logger.info("runningTasks ${event.descriptor.name} ${event.toString()} $runningTasks")
+        val className = (event.descriptor as? JvmTestOperationDescriptor)?.className
+        if (className == null && event.descriptor.name.startsWith("Gradle Test Run ")) {
           val taskPath = event.descriptor.name.removePrefix("Gradle Test Run ").trim()
-
           if (taskPath in expectedTestTasks && completedTasks.add(taskPath)) {
             logger.info("✅ Task succeeded: $taskPath")
-            if (completedTasks.containsAll(expectedTestTasks) &&
-                !cancellationTokenSource.token().isCancellationRequested) {
-              logger.info("✅ All expected test tasks succeeded, cancelling execution.")
+          }
+        }
+        if (completedTasks.containsAll(expectedTestTasks) && runningTasks.isEmpty()) {
+          logger.info("✅ All expected test tasks succeeded, cancelling execution.")
+          GlobalScope.launch {
+            lastTaskId?.let { testEndTimes.compute(it) { _, _ -> event.eventTime } }
+            if (!cancellationTokenSource.token().isCancellationRequested) {
               cancellationTokenSource.cancel()
             }
           }
         }
 
-        ((event.descriptor as? JvmTestOperationDescriptor)?.className?.let { className ->
+        className?.let {
           tasks.entries
               .find { entry ->
                 entry.value.testClassName?.let { className.endsWith(".${it}") || it == className }
@@ -64,24 +76,22 @@ fun testListener(
               }
               ?.key
               ?.let { nxTaskId ->
+                lastTaskId = nxTaskId
                 testEndTimes.compute(nxTaskId) { _, _ -> event.result.endTime }
                 when (event.result) {
                   is TestSuccessResult ->
-                      logger.info(
-                          "\u2705 Test passed at ${event.result.endTime}: $nxTaskId $className")
+                      logger.info("✅ Test passed at ${event.result.endTime}: $nxTaskId $className")
 
                   is TestFailureResult -> {
                     testTaskStatus[nxTaskId] = false
-                    logger.warning("\u274C Test failed: $nxTaskId $className")
+                    logger.warning("❌ Test failed: $nxTaskId $className")
                   }
 
-                  is TestSkippedResult ->
-                      logger.warning("\u26A0\uFE0F Test skipped: $nxTaskId $className")
-
-                  else -> logger.warning("\u26A0\uFE0F Unknown test result: $nxTaskId $className")
+                  is TestSkippedResult -> logger.warning("⚠️ Test skipped: $nxTaskId $className")
+                  else -> logger.warning("⚠️ Unknown test result: $nxTaskId $className")
                 }
               }
-        })
+        }
       }
     }
   }

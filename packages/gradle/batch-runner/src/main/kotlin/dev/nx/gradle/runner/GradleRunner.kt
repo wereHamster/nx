@@ -36,8 +36,8 @@ suspend fun runTasksInParallel(
     // --info is for terminal per task
     // --continue is for continue running tasks if one failed in a batch
     // --parallel is for performance
-    // -Dorg.gradle.daemon.idletimeout=10000 is to kill daemon after 10 seconds
-    addAll(listOf("--info", "--continue", "-Dorg.gradle.daemon.idletimeout=10000"))
+    // -Dorg.gradle.daemon.idletimeout=10000 is to kill daemon after 0 ms
+    addAll(listOf("--info", "--continue", "-Dorg.gradle.daemon.idletimeout=0"))
     addAll(additionalArgs.split(" ").filter { it.isNotBlank() })
     excludeTasks.forEach {
       add("--exclude-task")
@@ -147,6 +147,7 @@ fun runTestLauncher(
       testTaskStatus[nxTaskId] = true
     }
   }
+  val expectedTestClasses = tasks.values.mapNotNull { it.testClassName }.toSet()
 
   val globalStart = System.currentTimeMillis()
   var globalOutput: String
@@ -157,19 +158,11 @@ fun runTestLauncher(
         .newTestLauncher()
         .apply {
           forTasks(*taskNames.toTypedArray())
-          tasks.values
-              .mapNotNull { it.testClassName }
-              .forEach {
-                logger.info("Registering test class: $it")
-                withJvmTestClasses(it)
-                withArguments("--tests", it)
-              }
-
-          withArguments("--no-rebuild")
-          withArguments("--isolate-projects") // Isolate project execution
-          withArguments("--no-configure-on-demand") // Prevent auto-configuration
-
-          withArguments(*args.toTypedArray())
+          expectedTestClasses.forEach {
+            logger.info("Registering test class: $it")
+            withJvmTestClasses(it)
+          }
+          addArguments(*args.toTypedArray())
           setStandardOutput(outputStream)
           setStandardError(errorStream)
           addProgressListener(
@@ -183,6 +176,7 @@ fun runTestLauncher(
                   taskNames,
                   cancellationTokenSource),
               OperationType.TEST)
+          withDetailedFailure()
           withCancellationToken(cancellationTokenSource.token()) // Add cancellation token
         }
         .run()
