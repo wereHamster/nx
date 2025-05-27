@@ -9,13 +9,11 @@ import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.gradle.tooling.BuildCancelledException
-import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.events.OperationType
 
 suspend fun runTasksInParallel(
-    buildConnection: ProjectConnection,
-    testConnection: ProjectConnection,
+    connection: ProjectConnection,
     tasks: Map<String, GradleTask>,
     additionalArgs: String,
     excludeTasks: List<String>
@@ -50,7 +48,7 @@ suspend fun runTasksInParallel(
   val buildJob = async {
     if (buildTasks.isNotEmpty()) {
       runBuildLauncher(
-          buildConnection,
+          connection,
           buildTasks.associate { it.key to it.value },
           args,
           outputStream1,
@@ -61,7 +59,7 @@ suspend fun runTasksInParallel(
   val testJob = async {
     if (testClassTasks.isNotEmpty()) {
       runTestLauncher(
-          testConnection,
+          connection,
           testClassTasks.associate { it.key to it.value },
           args,
           outputStream2,
@@ -151,7 +149,6 @@ fun runTestLauncher(
 
   val globalStart = System.currentTimeMillis()
   var globalOutput: String
-  val cancellationTokenSource = GradleConnector.newCancellationTokenSource()
 
   try {
     connection
@@ -167,17 +164,9 @@ fun runTestLauncher(
           setStandardError(errorStream)
           addProgressListener(
               testListener(
-                  tasks,
-                  taskStartTimes,
-                  taskResults,
-                  testTaskStatus,
-                  testStartTimes,
-                  testEndTimes,
-                  taskNames,
-                  cancellationTokenSource),
+                  tasks, taskStartTimes, taskResults, testTaskStatus, testStartTimes, testEndTimes),
               OperationType.TEST)
           withDetailedFailure()
-          withCancellationToken(cancellationTokenSource.token()) // Add cancellation token
         }
         .run()
     globalOutput = buildTerminalOutput(outputStream, errorStream)
@@ -195,12 +184,14 @@ fun runTestLauncher(
   }
 
   val globalEnd = System.currentTimeMillis()
+  val maxEndTime = testEndTimes.values.maxOrNull() ?: globalEnd
+  val delta = globalEnd - maxEndTime
 
   tasks.forEach { (nxTaskId, taskConfig) ->
     if (taskConfig.testClassName != null) {
       val success = testTaskStatus[nxTaskId] ?: false
       val startTime = testStartTimes[nxTaskId] ?: globalStart
-      val endTime = testEndTimes[nxTaskId] ?: globalEnd
+      val endTime = testEndTimes[nxTaskId]?.plus(delta) ?: globalEnd
 
       if (!taskResults.containsKey(nxTaskId)) {
         taskResults[nxTaskId] = TaskResult(success, startTime, endTime, "")
