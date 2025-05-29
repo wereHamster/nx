@@ -1280,6 +1280,10 @@ const nxApiRedirects = {
   '/nx-api/eslint-plugin/:slug*': '/technologies/eslint-plugin/api/:slug*',
   '/nx-api/module-federation/:slug*':
     '/technologies/module-federation/api/:slug*',
+  // api document pages -> tech guides
+  // /nx-api/<package>/documents/<doc> -> /technologies/<package>/recipes/<doc>
+  '/nx-api/angular/documents/:slug*': '/technologies/angular/recipes/:slug*',
+
 };
 
 /**

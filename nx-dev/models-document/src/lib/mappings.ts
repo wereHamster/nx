@@ -19,8 +19,6 @@ export const pkgToGeneratedApiDocs: Record<
   // angular
   angular: {
     pagePath: '/technologies/angular/api',
-    // TODO(docs): move these to guides and remove this
-    includeDocuments: true,
   },
   // react
   react: {

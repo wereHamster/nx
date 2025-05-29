@@ -1223,6 +1223,30 @@
                     "isExternal": false,
                     "children": [],
                     "disableCollapsible": false
+                  },
+                  {
+                    "name": "Nx and the Angular CLI",
+                    "path": "/technologies/angular/recipes/nx-and-angular",
+                    "id": "nx-and-angular",
+                    "isExternal": false,
+                    "children": [],
+                    "disableCollapsible": false
+                  },
+                  {
+                    "name": "Nx Devkit and Angular Devkit",
+                    "path": "/technologies/angular/recipes/nx-devkit-angular-devkit",
+                    "id": "nx-devkit-angular-devkit",
+                    "isExternal": false,
+                    "children": [],
+                    "disableCollapsible": false
+                  },
+                  {
+                    "name": "Angular and Nx Version Matrix",
+                    "path": "/technologies/angular/recipes/angular-nx-version-matrix",
+                    "id": "angular-nx-version-matrix",
+                    "isExternal": false,
+                    "children": [],
+                    "disableCollapsible": false
                   }
                 ],
                 "disableCollapsible": false
@@ -1233,47 +1257,6 @@
                 "id": "api",
                 "isExternal": false,
                 "children": [
-                  {
-                    "id": "documents",
-                    "path": "/technologies/angular/api/documents",
-                    "name": "documents",
-                    "children": [
-                      {
-                        "id": "Overview",
-                        "path": "/technologies/angular/api/documents/overview",
-                        "name": "Overview",
-                        "children": [],
-                        "isExternal": false,
-                        "disableCollapsible": false
-                      },
-                      {
-                        "id": "Nx and the Angular CLI",
-                        "path": "/technologies/angular/api/documents/nx-and-angular",
-                        "name": "Nx and the Angular CLI",
-                        "children": [],
-                        "isExternal": false,
-                        "disableCollapsible": false
-                      },
-                      {
-                        "id": "Nx Devkit and Angular Devkit",
-                        "path": "/technologies/angular/api/documents/nx-devkit-angular-devkit",
-                        "name": "Nx Devkit and Angular Devkit",
-                        "children": [],
-                        "isExternal": false,
-                        "disableCollapsible": false
-                      },
-                      {
-                        "id": "Angular and Nx Version Matrix",
-                        "path": "/technologies/angular/api/documents/angular-nx-version-matrix",
-                        "name": "Angular and Nx Version Matrix",
-                        "children": [],
-                        "isExternal": false,
-                        "disableCollapsible": false
-                      }
-                    ],
-                    "isExternal": false,
-                    "disableCollapsible": false
-                  },
                   {
                     "id": "executors",
                     "path": "/technologies/angular/api/executors",
@@ -7437,47 +7420,6 @@
         "name": "angular",
         "children": [
           {
-            "id": "documents",
-            "path": "/nx-api/angular/documents",
-            "name": "documents",
-            "children": [
-              {
-                "name": "Overview",
-                "path": "/technologies/angular/api/documents/overview",
-                "id": "overview",
-                "isExternal": false,
-                "children": [],
-                "disableCollapsible": false
-              },
-              {
-                "name": "Nx and the Angular CLI",
-                "path": "/technologies/angular/api/documents/nx-and-angular",
-                "id": "nx-and-angular",
-                "isExternal": false,
-                "children": [],
-                "disableCollapsible": false
-              },
-              {
-                "name": "Nx Devkit and Angular Devkit",
-                "path": "/technologies/angular/api/documents/nx-devkit-angular-devkit",
-                "id": "nx-devkit-angular-devkit",
-                "isExternal": false,
-                "children": [],
-                "disableCollapsible": false
-              },
-              {
-                "name": "Angular and Nx Version Matrix",
-                "path": "/technologies/angular/api/documents/angular-nx-version-matrix",
-                "id": "angular-nx-version-matrix",
-                "isExternal": false,
-                "children": [],
-                "disableCollapsible": false
-              }
-            ],
-            "isExternal": false,
-            "disableCollapsible": false
-          },
-          {
             "id": "executors",
             "path": "/nx-api/angular/executors",
             "name": "executors",
@@ -11252,30 +11194,6 @@
                 "name": "Overview",
                 "path": "/nx-api/angular/documents/overview",
                 "id": "overview",
-                "isExternal": false,
-                "children": [],
-                "disableCollapsible": false
-              },
-              {
-                "name": "Nx and the Angular CLI",
-                "path": "/nx-api/angular/documents/nx-and-angular",
-                "id": "nx-and-angular",
-                "isExternal": false,
-                "children": [],
-                "disableCollapsible": false
-              },
-              {
-                "name": "Nx Devkit and Angular Devkit",
-                "path": "/nx-api/angular/documents/nx-devkit-angular-devkit",
-                "id": "nx-devkit-angular-devkit",
-                "isExternal": false,
-                "children": [],
-                "disableCollapsible": false
-              },
-              {
-                "name": "Angular and Nx Version Matrix",
-                "path": "/nx-api/angular/documents/angular-nx-version-matrix",
-                "id": "angular-nx-version-matrix",
                 "isExternal": false,
                 "children": [],
                 "disableCollapsible": false
