@@ -1285,6 +1285,7 @@ const nxApiRedirects = {
   '/nx-api/angular/documents/:slug*': '/technologies/angular/recipes/:slug*',
   '/nx-api/storybook/documents/:slug*': '/technologies/test-tools/storybook/recipes/:slug*',
   '/nx-api/module-federation/documents/:slug*': '/technologies/module-federation/recipes/:slug*',
+  '/nx-api/eslint-plugin/documents/:slug*': '/technologies/eslint/eslint-plugin/recipes/:slug*',
 
 };
 

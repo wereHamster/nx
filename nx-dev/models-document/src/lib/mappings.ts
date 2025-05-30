@@ -101,8 +101,6 @@ export const pkgToGeneratedApiDocs: Record<
   },
   'eslint-plugin': {
     pagePath: '/technologies/eslint/eslint-plugin/api',
-    // TODO(docs): move these to guides and remove this
-    includeDocuments: true,
   },
   // core and misc
   // For now, things that are not in technologies are put here in references/core-api
