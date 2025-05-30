@@ -1283,6 +1283,7 @@ const nxApiRedirects = {
   // api document pages -> tech guides
   // /nx-api/<package>/documents/<doc> -> /technologies/<package>/recipes/<doc>
   '/nx-api/angular/documents/:slug*': '/technologies/angular/recipes/:slug*',
+  '/nx-api/storybook/documents/:slug*': '/technologies/test-tools/storybook/recipes/:slug*',
 
 };
 

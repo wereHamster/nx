@@ -82,8 +82,6 @@ export const pkgToGeneratedApiDocs: Record<
   },
   storybook: {
     pagePath: '/technologies/test-tools/storybook/api',
-    // TODO(docs): move these to guides and remove this
-    includeDocuments: true,
   },
   playwright: {
     pagePath: '/technologies/test-tools/playwright/api',
