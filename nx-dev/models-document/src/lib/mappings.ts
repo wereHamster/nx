@@ -95,8 +95,6 @@ export const pkgToGeneratedApiDocs: Record<
   // misc
   'module-federation': {
     pagePath: '/technologies/module-federation/api',
-    // TODO(docs): move these to guides and remove this
-    includeDocuments: true,
   },
   eslint: {
     pagePath: '/technologies/eslint/api',
