@@ -1286,6 +1286,16 @@ const nxApiRedirects = {
   '/nx-api/storybook/documents/:slug*': '/technologies/test-tools/storybook/recipes/:slug*',
   '/nx-api/module-federation/documents/:slug*': '/technologies/module-federation/recipes/:slug*',
   '/nx-api/eslint-plugin/documents/:slug*': '/technologies/eslint/eslint-plugin/recipes/:slug*',
+  // core packages - redirect documents to reference guides
+  '/nx-api/nx/documents/:slug*': '/reference/core-api/nx/:slug*',
+  '/nx-api/workspace/documents/:slug*': '/reference/core-api/workspace/:slug*',
+  '/nx-api/owners/documents/:slug*': '/reference/core-api/owners/:slug*',
+  '/nx-api/conformance/documents/:slug*': '/reference/core-api/conformance/:slug*',
+  '/nx-api/azure-cache/documents/:slug*': '/reference/core-api/azure-cache/:slug*',
+  '/nx-api/gcs-cache/documents/:slug*': '/reference/core-api/gcs-cache/:slug*',
+  '/nx-api/s3-cache/documents/:slug*': '/reference/core-api/s3-cache/:slug*',
+  '/nx-api/shared-fs-cache/documents/:slug*': '/reference/core-api/shared-fs-cache/:slug*',
+  '/nx-api/devkit/documents/:slug*': '/reference/core-api/devkit/:slug*',
 
 };
 
