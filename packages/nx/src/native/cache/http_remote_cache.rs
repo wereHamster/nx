@@ -12,7 +12,11 @@ use super::{
 use flate2::Compression;
 use reqwest::{Client, ClientBuilder, StatusCode, header};
 use tar::{Archive, Builder};
+use std::sync::Arc;
 use tracing::trace;
+use rustls::ClientConfig;
+use reqwest::tls::rustls::TlsClientConfig;
+use rustls_platform_verifier::Verifier;
 
 #[napi]
 pub struct HttpRemoteCache {
@@ -39,7 +43,13 @@ impl HttpRemoteCache {
             header::HeaderValue::from_static("application/octet-stream"),
         );
 
-        let mut client_builder = ClientBuilder::new().default_headers(headers);
+        let tls_config = ClientConfig::builder()
+            .with_root_certificates(Verifier::new())
+            .with_no_client_auth();
+
+        let mut client_builder = ClientBuilder::new()
+            .use_preconfigured_tls(TlsClientConfig::from(Arc::new(tls_config)))
+            .default_headers(headers);
 
         let env_accept_unauthorized = env::var("NODE_TLS_REJECT_UNAUTHORIZED");
         if let Ok(env_accept_unauthorized) = env_accept_unauthorized {
